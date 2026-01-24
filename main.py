@@ -1,6 +1,6 @@
 import pygame
 import random
-
+import os
 #遊戲初始化
 pygame.init()
 #設定
@@ -17,12 +17,16 @@ GREEN = (0,255,0)
 RAD = (255,0,0)
 YELLOW = (255,255,0)
 BLACK = (0,0,0)
-
+#加載圖片
+background = pygame.image.load(os.path.join('image','background.png')).convert()
+player = pygame.image.load(os.path.join('image','player.png')).convert()
+rock = pygame.image.load(os.path.join('image','rock.png')).convert()
+bullet = pygame.image.load(os.path.join('image','bullet.png')).convert()
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((50,40))
-        self.image.fill(GREEN)
+        self.image = pygame.transform.scale(player,(50,38))
+        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH // 2
         self.rect.bottom = HEIGHT - 10
@@ -58,8 +62,8 @@ class Player(pygame.sprite.Sprite):
 class Rock(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((30,40))
-        self.image.fill(RAD)
+        self.image = rock
+        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(0,WIDTH - self.rect.width)
         self.rect.y = random.randrange(-100,-40)
@@ -77,8 +81,8 @@ class Rock(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     def __init__(self,x,y):
         super().__init__()
-        self.image = pygame.Surface((10,20))
-        self.image.fill(YELLOW)
+        self.image = bullet
+        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.centerx = x
         self.rect.bottom = y
@@ -95,9 +99,9 @@ bullets = pygame.sprite.Group()
 player = Player()
 all_sprites.add(player)
 for _ in range(10):
-    rock = Rock()
-    all_sprites.add(rock)
-    rocks.add(rock)
+    r = Rock()
+    all_sprites.add(r)
+    rocks.add(r)
 
 #遊戲迴圈
 running = True
@@ -112,15 +116,16 @@ while running:
     #石頭和子彈的碰撞
     hits = pygame.sprite.groupcollide(rocks,bullets,True,True)
     for hit in hits:
-        rock = Rock()
-        all_sprites.add(rock)
-        rocks.add(rock)
+        r = Rock()
+        all_sprites.add(r)
+        rocks.add(r)
     #飛機和石頭的碰撞
     hits = pygame.sprite.spritecollide(player,rocks,False)
     if hits:
         running = False
     #畫面顯示
     screen.fill(BLACK)
+    screen.blit(background, (0,0))
     all_sprites.draw(screen)
     pygame.display.update()
 
