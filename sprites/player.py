@@ -12,7 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = WIDTH // 2
         self.rect.bottom = HEIGHT - 10
         self.speedx = 8
-        #自動射擊
+        #自動射擊/射速
         self.shoot_delay = 250
         self.last_shot = pygame.time.get_ticks()
 
@@ -29,10 +29,11 @@ class Player(pygame.sprite.Sprite):
         if self.rect.left < 0:
             self.rect.left = 0
 
-    def shoot(self, all_sprites, bullets, bullet_img):
+    def shoot(self, all_sprites, bullets, bullet_img,  shoot_sound):
         now = pygame.time.get_ticks()
         if now - self.last_shot > self.shoot_delay:
             self.last_shot = now
             bullet = Bullet(self.rect.centerx, self.rect.top, bullet_img)
             all_sprites.add(bullet)
             bullets.add(bullet)
+            shoot_sound.play()
