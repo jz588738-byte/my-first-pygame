@@ -1,3 +1,5 @@
+from pygame.examples.midi import fill_region
+
 from setting import HEIGHT
 import pygame
 import pygame
@@ -29,9 +31,11 @@ pygame.mixer.Sound(os.path.join('sound','expl0.wav')),
 pygame.mixer.Sound(os.path.join('sound','expl1.wav'))
 ]
 pygame.mixer_music.load(os.path.join('sound','background.ogg'))
+
 #調整音量
 shoot_sound.set_volume(0.5)
 pygame.mixer_music.set_volume(0.3)
+
 #載入字體
 font_name = pygame.font.match_font('arial')
 def draw_text(surf, text, size, x, y):
@@ -42,6 +46,23 @@ def draw_text(surf, text, size, x, y):
     text_rect.top = y
     surf.blit(text_surface, text_rect)
 
+#顯示生命值
+def draw_health(surf, hp, x, y):
+    if hp < 0:
+        hp = 0
+    BAR_LENGTH = 100
+    BAR_HEIGHT = 10
+    fill = (hp / 100) * BAR_LENGTH
+    outline_rect = pygame.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+    fill_rect = pygame.Rect(x, y, fill, BAR_HEIGHT)
+    pygame.draw.rect(surf, GREEN, fill_rect)
+    pygame.draw.rect(surf, WHITE, outline_rect, 2)
+#增加石頭
+def new_rock():
+    r = Rock(rocks_img)
+    all_sprites.add(r)
+    rocks.add(r)
+
 #創立各物件的群組，方便做碰撞判斷
 all_sprites = pygame.sprite.Group()
 rocks = pygame.sprite.Group()
@@ -51,9 +72,7 @@ bullets = pygame.sprite.Group()
 player = Player(player_img, bullet_img, all_sprites, bullets)
 all_sprites.add(player)
 for _ in range(10):
-    r = Rock(rocks_img)
-    all_sprites.add(r)
-    rocks.add(r)
+    new_rock()
 
 #分數
 score = 0
@@ -83,18 +102,20 @@ while running:
         expl_sound.set_volume(0.5)
         expl_sound.play()
         score += int(hit.radius)
-        r = Rock(rocks_img)
-        all_sprites.add(r)
-        rocks.add(r)
+        new_rock()
 
     #飛機和石頭的碰撞
-    hits = pygame.sprite.spritecollide(player,rocks,False,pygame.sprite.collide_circle)
-    if hits:
-        running = False
+    hits = pygame.sprite.spritecollide(player,rocks,True,pygame.sprite.collide_circle)
+    for hit in hits:
+        player.health -= hit.radius
+        if player.health <= 0:
+            running = False
+        new_rock()
 
     #畫面顯示
     screen.fill(BLACK)
     screen.blit(background_img, (0,0))
+    draw_health(screen, player.health, 5, 15)
     all_sprites.draw(screen)
     draw_text(screen, str(score), 18, WIDTH // 2 , 0)
     pygame.display.update()

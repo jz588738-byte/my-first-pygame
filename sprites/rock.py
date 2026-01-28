@@ -10,13 +10,15 @@ class Rock(pygame.sprite.Sprite):
         self.image = self.image_ori.copy()
         self.rect = self.image.get_rect()
         self.radius = self.rect.width * 0.85 // 2
+        #初始位置
         self.rect.x = random.randrange(0,WIDTH - self.rect.width)
         self.rect.y = random.randrange(-200,-100)
-        self.speedy = random.randrange(2,4)
-        self.speedx = random.randrange(-2, 2)
+        self.speedy = random.randrange(2,5)
+        self.speedx = random.randrange(-1,1)
         self.total_degree = 0
-        self.rot_degree = random.randrange(-3, 3)
+        self.rot_degree = random.randrange(-2, 2)
 
+    #石頭旋轉
     def rotate(self):
         self.total_degree += self.rot_degree
         self.total_degree = self.total_degree % 360
@@ -33,4 +35,4 @@ class Rock(pygame.sprite.Sprite):
             self.rect.x = random.randrange(0, WIDTH - self.rect.width)
             self.rect.y = random.randrange(-100, -40)
             self.speedy = random.randrange(2, 5)
-            self.speedx = random.randrange(2, 5)
+            self.speedx = random.randrange(-1,1)
