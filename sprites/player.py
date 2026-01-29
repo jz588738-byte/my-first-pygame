@@ -12,6 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = WIDTH // 2
         self.rect.bottom = HEIGHT - 10
         self.speedx = 8
+        self.health = 100
         #自動射擊/射速
         self.shoot_delay = 250
         self.last_shot = pygame.time.get_ticks()
