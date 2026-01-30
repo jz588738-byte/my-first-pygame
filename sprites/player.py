@@ -3,9 +3,10 @@ import pygame
 from .bullet import Bullet
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, player_img, bullet_img, all_sprites, bullets):
+    def __init__(self, res ):
         super().__init__()
-        self.image = pygame.transform.scale(player_img,(50,38))
+        self.res = res
+        self.image = pygame.transform.scale(self.res['img']['player'],(50,38))
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.radius = 20
@@ -30,11 +31,11 @@ class Player(pygame.sprite.Sprite):
         if self.rect.left < 0:
             self.rect.left = 0
 
-    def shoot(self, all_sprites, bullets, bullet_img,  shoot_sound):
+    def shoot(self, all_sprites, bullets):
         now = pygame.time.get_ticks()
         if now - self.last_shot > self.shoot_delay:
             self.last_shot = now
-            bullet = Bullet(self.rect.centerx, self.rect.top, bullet_img)
+            bullet = Bullet(self.rect.centerx, self.rect.top, self.res)
             all_sprites.add(bullet)
             bullets.add(bullet)
-            shoot_sound.play()
+            self.res['sound']['shoot'].play()

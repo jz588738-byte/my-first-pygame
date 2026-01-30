@@ -3,9 +3,10 @@ import pygame
 import random
 
 class Rock(pygame.sprite.Sprite):
-    def __init__(self,rocks_img):
+    def __init__(self,res):
         super().__init__()
-        self.image_ori = random.choice(rocks_img)
+        self.res = res
+        self.image_ori = random.choice(self.res['img']['rocks'])
         self.image_ori.set_colorkey(BLACK)
         self.image = self.image_ori.copy()
         self.rect = self.image.get_rect()
