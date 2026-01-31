@@ -16,6 +16,8 @@ def Load_resources():
     res['img']['background'] = pygame.image.load(os.path.join(BASE_DIR, 'image','background.png')).convert()
     res['img']['background'] = pygame.transform.scale(res['img']['background'],(WIDTH,HEIGHT))
     res['img']['player'] = pygame.image.load(os.path.join(BASE_DIR, 'image','player.png')).convert()
+    res['img']['player_mini'] = pygame.image.load(os.path.join(BASE_DIR, 'image','player.png')).convert()
+    res['img']['player_mini'] = pygame.transform.scale(res['img']['player_mini'], (20, 19))
     res['img']['bullet'] = pygame.image.load(os.path.join(BASE_DIR, 'image','bullet.png')).convert()
 
     res['img']['rocks'] = []
