@@ -3,7 +3,8 @@ import random
 from setting import *
 from sprites import Player, Rock, Explosion
 from resource_manager import Load_resources
-from ui_utils import Draw_text, Draw_health
+from ui_utils import Draw_text, Draw_health, draw_lives
+
 #遊戲初始化
 pygame.init()
 pygame.mixer.init()
@@ -67,22 +68,28 @@ while running:
     #飛機和石頭的碰撞
     hits = pygame.sprite.spritecollide(player,rocks,True,pygame.sprite.collide_circle)
     for hit in hits:
+        new_rock()
         player.health -= hit.radius
         expl = Explosion(hit.rect.center, 'sm', res)
         all_sprites.add(expl)
         res['sound']['crash_player'].play()
         if player.health <= 0:
-            die_expl = Explosion(player.rect.center, 'player_die', res)
-            all_sprites.add(die_expl)
+            death_expl = Explosion(player.rect.center, 'player_die', res)
+            all_sprites.add(death_expl)
             res['sound']['player_die'].play()
-            running = True
-        new_rock()
+            player.lives -= 1
+            player.health = 100
+            player.respawn()
+
+    if player.lives == 0 and not death_expl.alive():
+        running = False
 
     #畫面顯示
     screen.fill(BLACK)
     screen.blit(res['img']['background'], (0,0))
     Draw_health(screen, player.health, 5, 15)
     all_sprites.draw(screen)
+    draw_lives(screen, player.lives, res['img']['player_mini'], WIDTH - 100, 15)
     Draw_text(screen, str(score), 18, WIDTH // 2 , 0)
     pygame.display.update()
 
