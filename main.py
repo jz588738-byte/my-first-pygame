@@ -1,7 +1,7 @@
 import pygame
 import random
 from setting import *
-from sprites import Player, Rock, Explosion
+from sprites import Player, Rock, Explosion, Power_up
 from resource_manager import Load_resources
 from ui_utils import Draw_text, Draw_health, draw_lives
 
@@ -26,6 +26,7 @@ def new_rock():
 all_sprites = pygame.sprite.Group()
 rocks = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
+powers = pygame.sprite.Group()
 
 #生成各物件
 player = Player(res)
@@ -53,9 +54,9 @@ while running:
         player.shoot(all_sprites, bullets)
     # 更新全部的物件
     all_sprites.update()
+
     #石頭和子彈的碰撞
     hits = pygame.sprite.groupcollide(rocks,bullets,True,True)
-
     for hit in hits:
         expl_sound = random.choice(res['sound']['expls'])
         expl_sound.set_volume(0.5)
@@ -63,6 +64,10 @@ while running:
         score += int(hit.radius)
         expl = Explosion(hit.rect.center, 'lg', res)
         all_sprites.add(expl)
+        if random.random() > 0.92:
+            power = Power_up(res, hit.rect.center)
+            all_sprites.add(power)
+            powers.add(power)
         new_rock()
 
     #飛機和石頭的碰撞
@@ -81,6 +86,17 @@ while running:
             player.health = 100
             player.respawn()
 
+    # 飛機和石頭的碰撞
+    hits = pygame.sprite.spritecollide(player, powers, True)
+    for hit in hits:
+        if hit.type == 'heal':
+            player.health += 20
+            if player.health > 100:
+                player.health = 100
+            res['sound']['power_up_sound']['heal'].play()
+        elif hit.type == 'grade_up':
+            player.grade_up()
+            res['sound']['power_up_sound']['grade_up'].play()
     if player.lives == 0 and not death_expl.alive():
         running = False
 
