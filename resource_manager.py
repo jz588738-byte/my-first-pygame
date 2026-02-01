@@ -8,7 +8,10 @@ BASE_DIR = os.path.dirname(__file__)
 def Load_resources():
     res = {
         'img': {},
-        'sound': {},
+        'power_up_img': {},
+        'sound': {
+            'power_up_sound':{}
+        },
         'anim': {'lg': [], 'sm': [], 'player_die': []}
     }
 
@@ -19,6 +22,9 @@ def Load_resources():
     res['img']['player_mini'] = pygame.image.load(os.path.join(BASE_DIR, 'image','player.png')).convert()
     res['img']['player_mini'] = pygame.transform.scale(res['img']['player_mini'], (20, 19))
     res['img']['bullet'] = pygame.image.load(os.path.join(BASE_DIR, 'image','bullet.png')).convert()
+    #寶物圖片
+    res['power_up_img']['grade_up'] = pygame.image.load(os.path.join(BASE_DIR, 'image','grade_up.png')).convert()
+    res['power_up_img']['heal'] = pygame.image.load(os.path.join(BASE_DIR, 'image','heal.png')).convert()
 
     res['img']['rocks'] = []
     for i in range(7):
@@ -36,15 +42,16 @@ def Load_resources():
         res['anim']['player_die'].append(player_expl_img)
 
     #加載音樂
-    res['sound']['shoot'] = pygame.mixer.Sound(os.path.join('sound','shoot.wav'))
-    res['sound']['player_die'] = pygame.mixer.Sound(os.path.join('sound','rumble.ogg'))
-
+    res['sound']['shoot'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound','shoot.wav'))
+    res['sound']['player_die'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound','rumble.ogg'))
+    res['sound']['power_up_sound']['grade_up'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound','grade_up.wav'))
+    res['sound']['power_up_sound']['heal'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'heal.wav'))
     res['sound']['expls'] = [
-    pygame.mixer.Sound(os.path.join('sound','expl0.wav')),
-    pygame.mixer.Sound(os.path.join('sound','expl1.wav'))
+    pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound','expl0.wav')),
+    pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound','expl1.wav'))
     ]
-    res['sound']['crash_player'] = pygame.mixer.Sound(os.path.join('sound', 'crash_player.wav'))
+    res['sound']['crash_player'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'crash_player.wav'))
 
-    pygame.mixer_music.load(os.path.join('sound','background.ogg'))
+    pygame.mixer_music.load(os.path.join(BASE_DIR, 'sound','background.ogg'))
 
     return res
