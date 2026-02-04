@@ -16,7 +16,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = HEIGHT - 10
         self.speedx = 8
         #復活的參數
-        self.lives = 3
+        self.lives = 1
         self.health = 100
         self.is_respawn = False
         self.is_invincibility = False

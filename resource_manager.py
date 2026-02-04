@@ -9,6 +9,7 @@ def Load_resources():
     res = {
         'img': {},
         'power_up_img': {},
+        'font':{},
         'sound': {
             'power_up_sound':{}
         },
