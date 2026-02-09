@@ -31,6 +31,10 @@ def Load_resources():
     for i in range(7):
         res['img']['rocks'].append(pygame.image.load(os.path.join(BASE_DIR, 'image',f'rock{i}.png')).convert())
 
+    res['img']['split_rocks'] = []
+    for i in range(5):
+        res['img']['split_rocks'].append(pygame.image.load(os.path.join(BASE_DIR, 'image',f'split_rock{i}.png')).convert())
+
     #爆炸的動畫圖片
     for i in range(9):
         expl_img = pygame.image.load(os.path.join(BASE_DIR, 'image',f'expl{i}.png')).convert()

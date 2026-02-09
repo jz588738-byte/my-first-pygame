@@ -1,7 +1,7 @@
 import pygame
 import random
 from setting import *
-from sprites import Player, Rock, Explosion, Power_up
+from sprites import Player, Explosion, Power_up, BaseRock, SplitRock
 from resource_manager import Load_resources
 from ui_utils import Draw_text, Draw_health, Draw_lives, Draw_init, Draw_end_screen
 
@@ -38,7 +38,10 @@ class Game:
 
     #增加石頭
     def new_rock(self):
-        r = Rock(self.res)
+        if random.random() < 0.2:
+            r = SplitRock(self.res)
+        else:
+            r = BaseRock(self.res)
         self.all_sprites.add(r)
         self.rocks.add(r)
 
@@ -77,7 +80,10 @@ while running:
         game.score += int(hit.radius)
         expl = Explosion(hit.rect.center, 'lg', res)
         game.all_sprites.add(expl)
-        if random.random() > 0.1:
+        if isinstance(hit, SplitRock):
+            hit.split(game.all_sprites, game.rocks)
+        #寶物的掉落
+        if random.random() > 0.9:
             power = Power_up(res, hit.rect.center)
             game.all_sprites.add(power)
             game.powers.add(power)
