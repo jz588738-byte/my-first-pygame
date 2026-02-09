@@ -54,7 +54,7 @@ def Draw_init(surf, res):
 def Draw_end_screen(surf, res, score):
     surf.blit(res['img']['background'], (0,0))
     Draw_text(surf, '遊戲結束!', 64, WIDTH / 2, HEIGHT / 4)
-    Draw_text(surf, f'最終分數:{score}~~', 30, WIDTH / 2, HEIGHT / 2)
+    Draw_text(surf, f'最終分數: {score}.', 30, WIDTH / 2, HEIGHT / 2)
     Draw_text(surf, '按下 [R] 重新開始', 23, WIDTH / 2, (HEIGHT / 3) * 2)
     Draw_text(surf, '按下 [M] 回到主選單', 23, WIDTH / 2, (HEIGHT / 3) * 2 + 40)
     pygame.display.update()
