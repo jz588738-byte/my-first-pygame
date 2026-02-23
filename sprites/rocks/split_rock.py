@@ -7,30 +7,34 @@ import random
 class SplitRock(BaseRock):
     def __init__(self, res, size = None, center = None):
         super().__init__(res)
-        self.size = size if size is not None else 4
+        self.size = size if size is not None else 2
 
         raw_image = self.res['img']['split_rocks'][self.size]
 
         #定義每一個石頭的大小
-        rock_widths = [20, 40, 60, 80, 100]
+        rock_widths = [30, 60, 90]
         target_width = rock_widths[self.size]
 
+        # 保存隨機位置或傳入的中心點
+        old_center = center if center else self.rect.center
+
+        self.radius = target_width * 0.85 // 2
         #縮放圖片
         self.image_ori = pygame.transform.scale(raw_image, (target_width, target_width))
         self.image_ori.set_colorkey(BLACK)
         self.image = self.image_ori.copy()
         self.rect = self.image.get_rect()
-        #重新計算半徑
-        self.radius = self.rect.width * 0.85 // 2
+        self.rect.center = old_center # 還原位置
+
 
         if center:
             self.rect.center = center
 
             self.speedy = random.randrange(2, 5)
-            self.speedx = random.randrange(-1, 1)
+            self.speedx = random.randrange(-3, 3)
 
     def split(self, all_sprites, rocks):
-        if self.size - 1 >= 0 and self.size > 3:
+        if self.size - 1 >= 0:
             new_size = self.size - 1
 
             #分裂石頭
