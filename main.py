@@ -1,7 +1,7 @@
 import pygame
 import random
 from setting import *
-from sprites import Player, Explosion, Power_up, BaseRock, SplitRock
+from sprites import Player, Explosion, Power_up, BaseRock, SplitRock, ExplodingRock
 from resource_manager import Load_resources
 from ui_utils import Draw_text, Draw_health, Draw_lives, Draw_init, Draw_end_screen
 
@@ -38,10 +38,23 @@ class Game:
 
     #增加石頭
     def new_rock(self):
-        if random.random() < 0.2:
-            r = SplitRock(self.res)
-        else:
+        if len(self.rocks) >= MAX_ROCKS: 
+            return
+
+        spawn_rates = {
+            'base': 50,
+            'split': 30,
+            'exploding':20
+        }
+
+        rock_type = random.choices(list(spawn_rates.keys()), weights = list(spawn_rates.values()), k = 1)[0]
+        if rock_type == 'base':
             r = BaseRock(self.res)
+        elif rock_type == 'split':
+            r = SplitRock(self.res)
+        elif rock_type == 'exploding':
+            r = ExplodingRock(self.res)
+        
         self.all_sprites.add(r)
         self.rocks.add(r)
 
@@ -68,6 +81,10 @@ while running:
     key_pressed = pygame.key.get_pressed()
     if key_pressed[pygame.K_SPACE]:
         game.player.shoot(game.all_sprites, game.bullets)
+    # 自動補充隕石 (維持 MIN_ROCKS~MAX_ROCKS 顆)
+    while len(game.rocks) < MIN_ROCKS:
+        game.new_rock()
+
     # 更新全部的物件
     game.all_sprites.update()
 
@@ -78,21 +95,26 @@ while running:
         expl_sound.set_volume(0.5)
         expl_sound.play()
         game.score += int(hit.radius)
-        expl = Explosion(hit.rect.center, 'lg', res)
-        game.all_sprites.add(expl)
-        if isinstance(hit, SplitRock):
-            hit.split(game.all_sprites, game.rocks)
+        if not isinstance(hit, ExplodingRock):
+            expl = Explosion(hit.rect.center, 'lg', res)
+            game.all_sprites.add(expl)
         #寶物的掉落
         if random.random() > 0.9:
             power = Power_up(res, hit.rect.center)
             game.all_sprites.add(power)
             game.powers.add(power)
-        game.new_rock()
+        #子彈射擊到的石頭種類
+        if isinstance(hit, SplitRock):
+            hit.split(game.all_sprites, game.rocks)
+            continue
+        elif isinstance(hit, ExplodingRock):
+            hit.damage_exploding(game.all_sprites, game.rocks, Explosion, game)
+            continue
+        
 
     #飛機和石頭的碰撞
     hits = pygame.sprite.spritecollide(game.player,game.rocks,True,pygame.sprite.collide_circle)
     for hit in hits:
-        game.new_rock()
         game.player.health -= hit.radius
         expl = Explosion(hit.rect.center, 'sm', res)
         game.all_sprites.add(expl)
@@ -130,8 +152,6 @@ while running:
                 game.player.health = 100
             res['sound']['power_up_sound']['heal'].play()
         elif hit.type == 'grade_up':
-            if game.player.grade == 1:
-                game.player.shoot_delay -= 50
             game.player.grade_up()
             res['sound']['power_up_sound']['grade_up'].play()
 

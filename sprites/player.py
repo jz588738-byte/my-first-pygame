@@ -32,6 +32,8 @@ class Player(pygame.sprite.Sprite):
         now = pygame.time.get_ticks()
         if self.grade > 1 and now - self.grade_time > 10000:
             self.grade -= 1
+            if self.grade == 1:
+                self.shoot_delay += 50
             self.grade_time = now
         #復活多久可以動
         if self.is_respawn and now - self.respawn_time > 1000:
@@ -78,6 +80,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (WIDTH // 2, HEIGHT + 500)
 
     def grade_up(self):
+        if self.grade == 1:
+            self.shoot_delay -= 50
         self.grade += 1
         self.grade_time = pygame.time.get_ticks()
 
