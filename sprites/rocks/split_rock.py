@@ -33,6 +33,12 @@ class SplitRock(BaseRock):
             self.speedy = random.randrange(2, 5)
             self.speedx = random.randrange(-3, 3)
 
+    def destroy(self, game, Explosion, Power_up):
+        # 呼叫父類別的基本摧毀邏輯
+        super().destroy(game, Explosion, Power_up)
+        # 分裂邏輯
+        self.split(game.all_sprites, game.rocks)
+
     def split(self, all_sprites, rocks):
         if self.size - 1 >= 0:
             new_size = self.size - 1

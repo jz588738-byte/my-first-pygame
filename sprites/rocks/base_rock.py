@@ -30,6 +30,29 @@ class BaseRock(pygame.sprite.Sprite):
         self.total_degree = 0
         self.rot_degree = random.randrange(*ROCK_ROT_DEGREE_RANGE)
 
+    def destroy(self, game, Explosion, Power_up):
+        """處理隕石被摧毀的邏輯。"""
+        # 加分
+        game.score += int(self.radius)
+        
+        # 播放爆炸音效
+        expl_sound = random.choice(self.res['sound']['expls'])
+        expl_sound.set_volume(0.5)
+        expl_sound.play()
+
+        # 產生爆炸動畫
+        expl = Explosion(self.rect.center, 'lg', self.res)
+        game.all_sprites.add(expl)
+
+        # 隨機產生寶物
+        if random.random() > 0.9:
+            power = Power_up(self.res, self.rect.center)
+            game.all_sprites.add(power)
+            game.powers.add(power)
+
+        # 摧毀自己
+        self.kill()
+
     # 隕石旋轉
     def rotate(self):
         """處理隕石的旋轉動畫。"""
