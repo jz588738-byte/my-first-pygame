@@ -16,10 +16,11 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = HEIGHT - 10
         self.speedx = 8
         #復活的參數
-        self.lives = 1
+        self.lives = 3
         self.health = 100
         self.is_respawn = False
         self.is_invincibility = False
+        self.invincibility_duration = 3000 # 無敵 3 秒
         self.respawn_time = 0
         #升級的參數
         self.grade = 1
@@ -40,6 +41,16 @@ class Player(pygame.sprite.Sprite):
             self.is_respawn = False
             self.rect.centerx = WIDTH // 2
             self.rect.bottom = HEIGHT - 10
+        #無敵閃爍處理
+        if self.is_invincibility:
+            if now - self.respawn_time > self.invincibility_duration:
+                self.is_invincibility = False
+                self.image.set_alpha(255)
+            else:
+                # 使用 sin 函數產生閃爍效果
+                alpha = int(128 + 127 * math.sin(now / 50))
+                self.image.set_alpha(alpha)
+
         #鍵盤控制邏輯
         if not self.is_respawn:
             key_pressed = pygame.key.get_pressed()

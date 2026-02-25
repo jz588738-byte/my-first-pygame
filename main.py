@@ -91,42 +91,25 @@ while running:
     #石頭和子彈的碰撞
     hits = pygame.sprite.groupcollide(game.rocks,game.bullets,True,True)
     for hit in hits:
-        expl_sound = random.choice(res['sound']['expls'])
-        expl_sound.set_volume(0.5)
-        expl_sound.play()
-        game.score += int(hit.radius)
-        if not isinstance(hit, ExplodingRock):
-            expl = Explosion(hit.rect.center, 'lg', res)
-            game.all_sprites.add(expl)
-        #寶物的掉落
-        if random.random() > 0.9:
-            power = Power_up(res, hit.rect.center)
-            game.all_sprites.add(power)
-            game.powers.add(power)
-        #子彈射擊到的石頭種類
-        if isinstance(hit, SplitRock):
-            hit.split(game.all_sprites, game.rocks)
-            continue
-        elif isinstance(hit, ExplodingRock):
-            hit.damage_exploding(game.all_sprites, game.rocks, Explosion, game)
-            continue
+        hit.destroy(game, Explosion, Power_up)
         
 
     #飛機和石頭的碰撞
-    hits = pygame.sprite.spritecollide(game.player,game.rocks,True,pygame.sprite.collide_circle)
-    for hit in hits:
-        game.player.health -= hit.radius
-        expl = Explosion(hit.rect.center, 'sm', res)
-        game.all_sprites.add(expl)
-        res['sound']['crash_player'].play()
-        if game.player.health <= 0:
-            death_expl = Explosion(game.player.rect.center, 'player_die', res)
-            game.all_sprites.add(death_expl)
-            res['sound']['player_die'].play()
-            game.player.lives -= 1
-            if game.player.lives != 0:
-                game.player.health = 100
-                game.player.respawn()
+    if not game.player.is_invincibility:
+        hits = pygame.sprite.spritecollide(game.player,game.rocks,True,pygame.sprite.collide_circle)
+        for hit in hits:
+            game.player.health -= hit.radius
+            expl = Explosion(hit.rect.center, 'sm', res)
+            game.all_sprites.add(expl)
+            res['sound']['crash_player'].play()
+            if game.player.health <= 0:
+                death_expl = Explosion(game.player.rect.center, 'player_die', res)
+                game.all_sprites.add(death_expl)
+                res['sound']['player_die'].play()
+                game.player.lives -= 1
+                if game.player.lives != 0:
+                    game.player.health = 100
+                    game.player.respawn()
 
     #結算畫面
     if game.player.lives <= 0:
