@@ -42,7 +42,6 @@ class Player(pygame.sprite.Sprite):
             self.is_respawn = False
             self.rect.centerx = WIDTH // 2
             self.rect.bottom = HEIGHT - 10
-        
         #無敵閃爍處理
         if self.is_invincibility:
             if now - self.respawn_time > self.invincibility_duration:
