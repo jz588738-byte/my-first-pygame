@@ -34,6 +34,7 @@ class Game:
 
         for _ in range(10):
             self.new_rock()
+        
         self.score = 0
 
     #增加石頭
