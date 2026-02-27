@@ -20,7 +20,7 @@ class Player(pygame.sprite.Sprite):
         self.health = 100
         self.is_respawn = False
         self.is_invincibility = False
-        self.invincibility_duration = 3000 # 無敵 3 秒
+        self.invincibility_duration = 3000 
         self.respawn_time = 0
         #升級的參數
         self.grade = 1
@@ -36,6 +36,7 @@ class Player(pygame.sprite.Sprite):
             if self.grade == 1:
                 self.shoot_delay += 50
             self.grade_time = now
+       
         #復活多久可以動
         if self.is_respawn and now - self.respawn_time > 1000:
             self.is_respawn = False
@@ -95,12 +96,3 @@ class Player(pygame.sprite.Sprite):
             self.shoot_delay -= 50
         self.grade += 1
         self.grade_time = pygame.time.get_ticks()
-
-    # def invincibility(self):
-    #     speed = 10
-    #     current_time = time.time()
-    #     #利用sin函數讓閃光變平滑
-    #     sin_value = math.sin(current_time * speed)
-    #     #用sin值控制透明度
-    #     alpha = (sin_value + 1) / 2 * 255
-    #     self.image.set_alpha(int(alpha))

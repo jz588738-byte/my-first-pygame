@@ -50,6 +50,7 @@ def Load_resources():
         img = pygame.image.load(os.path.join(BASE_DIR, 'image',f'exploding_rock{i}.png')).convert()
         img.set_colorkey(BLACK)
         res['img']['exploding_rock'].append(img)
+    
     #爆炸的動畫圖片
     for i in range(9):
         expl_img = pygame.image.load(os.path.join(BASE_DIR, 'image',f'expl{i}.png')).convert_alpha()
