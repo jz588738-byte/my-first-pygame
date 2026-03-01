@@ -5,8 +5,8 @@ import random
 
 class ExplodingRock(BaseRock):
 
-    def __init__(self, res):
-        super().__init__(res)
+    def __init__(self, res, game):
+        super().__init__(res, game)
         self.res = res
         
         self.is_exploding = False
@@ -21,6 +21,7 @@ class ExplodingRock(BaseRock):
         self.target_width = random.choice(rock_width)
         
         self.radius = self.target_width * 0.85// 2
+        self.damage = self.radius
 
         # 保存父類別 BaseRock 產生的隨機位置
         old_center = self.rect.center

@@ -3,15 +3,21 @@ import pygame
 import random
 
 class BaseRock(pygame.sprite.Sprite):
-    def __init__(self, res: dict):
+    def __init__(self, res: dict, game: 'Game'):
       
         super().__init__()
         self.res = res
+        self.game = game
+        self.game.rocks.add(self)
+        self.game.all_sprites.add(self)
+
         self.image_ori = random.choice(self.res['img']['rocks'])
         self.image_ori.set_colorkey(BLACK)
         self.image = self.image_ori.copy()
         self.rect = self.image.get_rect()
         self.radius = self.rect.width * 0.85 // 2
+        self.damage = self.radius
+        self.health = 1
         # 初始位置
         self.rect.x = random.randrange(0, WIDTH - self.rect.width)
         self.rect.y = random.randrange(ROCK_SPAWN_Y_MIN, ROCK_SPAWN_Y_MAX)

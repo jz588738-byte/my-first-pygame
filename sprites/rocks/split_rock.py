@@ -5,8 +5,8 @@ from setting import *
 import random
 
 class SplitRock(BaseRock):
-    def __init__(self, res, size = None, center = None):
-        super().__init__(res)
+    def __init__(self, res, game, size = None, center = None):
+        super().__init__(res, game)
         self.size = size if size is not None else 2
 
         raw_image = self.res['img']['split_rocks'][self.size]
@@ -19,6 +19,7 @@ class SplitRock(BaseRock):
         old_center = center if center else self.rect.center
 
         self.radius = target_width * 0.85 // 2
+        self.damage = self.radius
         #縮放圖片
         self.image_ori = pygame.transform.scale(raw_image, (target_width, target_width))
         self.image_ori.set_colorkey(BLACK)
@@ -44,8 +45,8 @@ class SplitRock(BaseRock):
             new_size = self.size - 1
 
             #分裂石頭
-            small_rock1 = SplitRock(self.res, new_size, (self.rect.right, self.rect.centery))
-            small_rock2 = SplitRock(self.res, new_size, (self.rect.left, self.rect.centery))
+            small_rock1 = SplitRock(self.res, self.game, new_size, (self.rect.right, self.rect.centery))
+            small_rock2 = SplitRock(self.res, self.game, new_size, (self.rect.left, self.rect.centery))
             #加入群組
             all_sprites.add(small_rock1, small_rock2)
             rocks.add(small_rock1, small_rock2)
