@@ -1,3 +1,4 @@
+from setting import BLACK
 import pygame
 import os
 from setting import  *
@@ -32,6 +33,11 @@ def Load_resources():
     res['power_up_img']['heal'] = pygame.image.load(os.path.join(BASE_DIR, 'image','heal.png')).convert()
     res['power_up_img']['heal'].set_colorkey(BLACK)
 
+    #敵機圖片
+    res['img']['sniper'] = pygame.image.load(os.path.join(BASE_DIR, 'image','sniper.png')).convert()
+    res['img']['sniper'] = pygame.transform.scale(res['img']['sniper'], (50, 50))
+    res['img']['sniper'].set_colorkey(BLACK)
+
     #隕石圖片
     res['img']['rocks'] = []
     for i in range(7):
@@ -64,6 +70,12 @@ def Load_resources():
         damage_exploding_img = pygame.image.load(os.path.join(BASE_DIR, 'image', f'damage_exploding ({i}).png')).convert_alpha()
         res['anim']['damage_exploding'].append(damage_exploding_img)
 
+    res['anim']['laser'] = []
+    for i in range(1, 7):
+        laser_img = pygame.image.load(os.path.join(BASE_DIR, 'image', f'laser ({i}).png')).convert()
+        laser_img.set_colorkey(BLACK)
+        res['anim']['laser'].append(laser_img)
+    
     #加載音樂
     res['sound']['shoot'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound','shoot.wav'))
     res['sound']['player_die'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound','rumble.ogg'))
@@ -74,7 +86,11 @@ def Load_resources():
     pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound','expl0.wav')),
     pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound','expl1.wav'))
     ]
+    
     res['sound']['crash_player'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'crash_player.wav'))
+    res['sound']['hit_enemy'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'hit_enemy.wav'))
+    res['sound']['laser_shoot'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'laser_shoot.wav'))
+    res['sound']['enemy_death'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'enemy_death.wav'))
 
     pygame.mixer_music.load(os.path.join(BASE_DIR, 'sound','background.ogg'))
 
