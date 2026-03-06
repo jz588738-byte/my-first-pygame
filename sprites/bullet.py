@@ -2,9 +2,10 @@ from setting import *
 import pygame
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, res):
+    def __init__(self, game, x, y):
         super().__init__()
-        self.res = res
+        self.game = game
+        self.res = game.res
         self.image = self.res['img']['bullet']
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
