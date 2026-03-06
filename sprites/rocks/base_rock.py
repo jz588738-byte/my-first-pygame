@@ -1,17 +1,24 @@
 from setting import *
 import pygame
 import random
+from ..power_up import Power_up
 
 class BaseRock(pygame.sprite.Sprite):
-    def __init__(self, res: dict):
+    def __init__(self, game: 'Game'):
       
         super().__init__()
-        self.res = res
+        self.res = game.res
+        self.game = game
+        self.game.rocks.add(self)
+        self.game.all_sprites.add(self)
+
         self.image_ori = random.choice(self.res['img']['rocks'])
         self.image_ori.set_colorkey(BLACK)
         self.image = self.image_ori.copy()
         self.rect = self.image.get_rect()
         self.radius = self.rect.width * 0.85 // 2
+        self.damage = self.radius
+        self.health = 1
         # 初始位置
         self.rect.x = random.randrange(0, WIDTH - self.rect.width)
         self.rect.y = random.randrange(ROCK_SPAWN_Y_MIN, ROCK_SPAWN_Y_MAX)
@@ -20,7 +27,7 @@ class BaseRock(pygame.sprite.Sprite):
         self.total_degree = 0
         self.rot_degree = random.randrange(*ROCK_ROT_DEGREE_RANGE)
 
-    def destroy(self, game, Explosion, Power_up):
+    def destroy(self, game, Explosion):
         # 加分
         game.score += int(self.radius)
         
@@ -30,12 +37,12 @@ class BaseRock(pygame.sprite.Sprite):
         expl_sound.play()
 
         # 產生爆炸動畫
-        expl = Explosion(self.rect.center, 'lg', self.res)
+        expl = Explosion(game, self.rect.center, 'lg')
         game.all_sprites.add(expl)
 
         # 隨機產生寶物
         if random.random() > 0.9:
-            power = Power_up(self.res, self.rect.center)
+            power = Power_up(game, self.rect.center)
             game.all_sprites.add(power)
             game.powers.add(power)
 

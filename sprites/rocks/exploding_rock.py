@@ -1,14 +1,13 @@
 import pygame
 from setting import * 
 from .base_rock import BaseRock
+from ..power_up import Power_up
 import random
 
 class ExplodingRock(BaseRock):
 
-    def __init__(self, res):
-        super().__init__(res)
-        self.res = res
-        
+    def __init__(self, game : 'Game'):
+        super().__init__(game)
         self.is_exploding = False
         self.frame = 0
         self.last_update = pygame.time.get_ticks()
@@ -21,6 +20,7 @@ class ExplodingRock(BaseRock):
         self.target_width = random.choice(rock_width)
         
         self.radius = self.target_width * 0.85// 2
+        self.damage = self.radius
 
         # 保存父類別 BaseRock 產生的隨機位置
         old_center = self.rect.center
@@ -30,14 +30,14 @@ class ExplodingRock(BaseRock):
         self.rect = self.image.get_rect()
         self.rect.center = old_center # 還原隨機位置
     
-    def destroy(self, game, Explosion, Power_up):
+    def destroy(self, game, Explosion):
         self.kill() # 從所有群組移除 (包含 rocks)
         game.all_sprites.add(self) # 加回 all_sprites 確保 update/draw 正常
         self.is_exploding = True
         self.res['sound']['damage_exploding'].play()
 
         if random.random() > 0.9:
-            power = Power_up(self.res, self.rect.center)
+            power = Power_up(game, self.rect.center)
             game.all_sprites.add(power)
             game.powers.add(power)
 
@@ -55,8 +55,10 @@ class ExplodingRock(BaseRock):
                 
                 if dist_sq < explosion_radius ** 2:
                     # 連鎖摧毀！
-                    rock.destroy(game, Explosion, Power_up)
+                    rock.destroy(game, Explosion)
         
+        from sprites.particle import Particle
+        Particle.create_explosion(game, self.rect.center)
         exploding_image = self.res['anim']['damage_exploding'][self.frame] 
         self.image = pygame.transform.scale(exploding_image, (self.target_width, self.target_width))
         center = self.rect.center
