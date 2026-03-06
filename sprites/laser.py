@@ -31,7 +31,7 @@ class Laser(pygame.sprite.Sprite):
         
         # 4. 旋轉已經拉長的雷射
         # angle + 180 讓頭部靠近發射點
-        self.image = pygame.transform.rotate(stretched_image, self.angle + 180)
+        self.image = pygame.transform.rotate(stretched_image, self.angle)
         
         # 5. 計算中心點
         # 雷射的起點是 pos + offset，終點是起點 + 方向 * length
@@ -43,11 +43,6 @@ class Laser(pygame.sprite.Sprite):
         center_pos = (start_pos + end_pos) / 2
         self.rect = self.image.get_rect(center=center_pos)
         
-        # 自定義碰撞方法
-        # 因為 spritecollide 預設用 rect 判斷，這會導致即使沒碰到射線，碰到 rect 的透明角角也會受傷。
-        # 最好的方式是把雷射當作多邊形，或是簡單寫個特製的圓形對線段碰撞，
-        # 在這裡我們用比較大膽的方法：把雷射半徑設很大 (因為 rect 很大)，
-        # 然後利用 pygame.mask 做精確的像素碰撞！
         self.mask = pygame.mask.from_surface(self.image)
         self.radius = self.thickness // 2 # 如果還是要用 collide_circle，這個值會失效，必須改用 collide_mask
         
@@ -75,7 +70,7 @@ class Laser(pygame.sprite.Sprite):
             original_img = self.anim[self.frame]
             # 這裡也要用 self.thickness 才會保持一樣粗
             stretched_image = pygame.transform.scale(original_img, (self.thickness, int(self.length)))
-            self.image = pygame.transform.rotate(stretched_image, self.angle + 180)
+            self.image = pygame.transform.rotate(stretched_image, self.angle)
             
             # 更新 rect 與 mask
             offset = self.direction * 35
