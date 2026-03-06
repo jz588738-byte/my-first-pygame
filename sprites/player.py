@@ -5,9 +5,10 @@ import math
 import time
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, res ):
+    def __init__(self, game):
         super().__init__()
-        self.res = res
+        self.game = game
+        self.res = game.res
         self.image = pygame.transform.scale(self.res['img']['player'],(50,38))
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
@@ -71,14 +72,14 @@ class Player(pygame.sprite.Sprite):
         if now - self.last_shot > self.shoot_delay and not self.is_respawn:
             if self.grade == 1:
                 self.last_shot = now
-                bullet = Bullet(self.rect.centerx, self.rect.top, self.res)
+                bullet = Bullet(self.game, self.rect.centerx, self.rect.top)
                 all_sprites.add(bullet)
                 bullets.add(bullet)
                 self.res['sound']['shoot'].play()
             elif self.grade >= 2:
                 self.last_shot = now
-                bullet1 = Bullet(self.rect.left, self.rect.y, self.res)
-                bullet2 = Bullet(self.rect.right, self.rect.y, self.res)
+                bullet1 = Bullet(self.game, self.rect.left, self.rect.y)
+                bullet2 = Bullet(self.game, self.rect.right, self.rect.y)
                 all_sprites.add(bullet1)
                 all_sprites.add(bullet2)
                 bullets.add(bullet1)
