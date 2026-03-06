@@ -1,9 +1,10 @@
 import pygame
 
 class Explosion(pygame.sprite.Sprite):
-    def __init__(self, center, size, res):
+    def __init__(self, game, center, size, particle_color = (255, 165, 0)):
         super().__init__()
-        self.res = res
+        self.game = game
+        self.res = game.res
         self.size = size
         self.image = self.res['anim'][size][0]
         self.rect = self.image.get_rect()
@@ -11,6 +12,13 @@ class Explosion(pygame.sprite.Sprite):
         self.frame = 0
         self.last_update = pygame.time.get_ticks()
         self.frame_rate = 50
+        
+        # 產生碎片粒子
+        from .particle import Particle
+        if self.size == 'player_die':
+            Particle.create_explosion(self.game, center)
+        else:
+            Particle.create_burst(self.game, center, particle_color)
 
     def update(self):
         now = pygame.time.get_ticks()
