@@ -1,9 +1,7 @@
 import pygame
 import random
 from setting import *
-from sprites import Player, Explosion, Power_up, BaseRock, SplitRock, ExplodingRock
-from sprites.laser import Laser
-from sprites.enemies.sniper import Sniper
+from sprites import *
 from resource_manager import Load_resources
 from ui_utils import Draw_text, Draw_health, Draw_lives, Draw_init, Draw_end_screen
 
@@ -34,7 +32,7 @@ class Game:
         self.lasers = pygame.sprite.Group()
 
         # 生成玩家
-        self.player = Player(self.res)
+        self.player = Player(self)
         self.all_sprites.add(self.player)
 
         for _ in range(10):
@@ -55,7 +53,7 @@ class Game:
         }
 
         enemy_class = random.choices(list(spawn_rates.keys()), weights=list(spawn_rates.values()), k=1)[0]
-        enemy_class(self.res, self)
+        enemy_class(self)
 
     def draw(self, screen):
         # 1. 畫背景
@@ -64,7 +62,6 @@ class Game:
         # 2. 畫所有 Sprite
         self.all_sprites.draw(screen)
         
-        # 3. 讓每個 Sprite 畫出自己的額外特效 (例如 Sniper 的警示線)
         for sprite in self.all_sprites:
             if hasattr(sprite, 'draw_extras'):
                 sprite.draw_extras(screen)
@@ -110,7 +107,7 @@ while running:
     for hit in hits:
         hit.health -= 1
         if hit.health <= 0:
-            hit.destroy(game, Explosion, Power_up)
+            hit.destroy(game, Explosion)
 
     # 子彈與敵機
     hits = pygame.sprite.groupcollide(game.enemies, game.bullets, False, True)
@@ -124,14 +121,14 @@ while running:
         hits_rocks = pygame.sprite.spritecollide(game.player, game.rocks, True, pygame.sprite.collide_circle)
         # 敵機碰撞
         hits_enemies = pygame.sprite.spritecollide(game.player, game.enemies, False, pygame.sprite.collide_circle)
-        # 雷射碰撞 (因為是長條狀斜線，改用 collide_mask 像素判斷最準確)
+        # 雷射碰撞 
         hits_lasers = pygame.sprite.spritecollide(game.player, game.lasers, False, pygame.sprite.collide_mask)
         
         all_hits = hits_rocks + hits_enemies + hits_lasers
         for hit in all_hits:
-            # 判斷是否為雷射，如果是且已經造成過傷害，就跳過
+            # 判斷是否為雷射，如果是且已經造成過傷害或是非第一幀，就跳過
             if hit in hits_lasers:
-                if hit.has_damaged_player:
+                if hit.has_damaged_player or hit.frame != 0:
                     continue
                 else:
                     hit.has_damaged_player = True
@@ -140,7 +137,7 @@ while running:
             
             # 如果是被雷射打到，爆炸位置應該在玩家身上，而不是在雷射的中心點
             expl_pos = game.player.rect.center if hit in hits_lasers else hit.rect.center
-            expl = Explosion(expl_pos, 'sm', res)
+            expl = Explosion(game, expl_pos, 'sm')
             
             game.all_sprites.add(expl)
             res['sound']['crash_player'].play()
@@ -150,7 +147,7 @@ while running:
                 hit.take_damage(100)
 
             if game.player.health <= 0:
-                death_expl = Explosion(game.player.rect.center, 'player_die', res)
+                death_expl = Explosion(game, game.player.rect.center, 'player_die')
                 game.all_sprites.add(death_expl)
                 res['sound']['player_die'].play()
                 game.player.lives -= 1
