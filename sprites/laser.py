@@ -4,11 +4,11 @@ import math
 from setting import WIDTH, HEIGHT
 
 class Laser(pygame.sprite.Sprite):
-    def __init__(self, res, game, pos, angle):
+    def __init__(self, game, pos, angle):
         super().__init__()
-        self.res = res
         self.game = game
-        self.anim = res['anim']['laser']
+        self.res = game.res
+        self.anim = self.res['anim']['laser']
         self.frame = 0
         self.last_update = pygame.time.get_ticks()
         self.frame_rate = 50
