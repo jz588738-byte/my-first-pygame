@@ -91,7 +91,7 @@ def Load_resources():
     res['sound']['hit_enemy'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'hit_enemy.wav'))
     res['sound']['laser_shoot'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'laser_shoot.wav'))
     res['sound']['enemy_death'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'enemy_death.wav'))
-
+    res['sound']['charging'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'charging.mp3'))
     pygame.mixer_music.load(os.path.join(BASE_DIR, 'sound','background.ogg'))
 
     return res
