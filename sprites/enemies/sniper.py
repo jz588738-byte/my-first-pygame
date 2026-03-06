@@ -13,14 +13,14 @@ class Sniper(BaseEnemy):
     STATE_FIRE = 'fire'
     STATE_RECOVER = 'recover'
 
-    def __init__(self, res : dict, game : 'Game'):
-        super().__init__(res, game, health = 3, score_value = 100)
-       
+    def __init__(self, game : 'Game'):
+        super().__init__(game, health = 3, score_value = 100, particle_color = (20, 150, 255))
         self.original_image = self.res['img']['sniper']
         self.image = self.original_image.copy()
         self.rect = self.image.get_rect()
 
         self.rect.center = (random.randint(25, WIDTH - 25), random.randint(-100, -50))
+        self.stable_center = pygame.math.Vector2(self.rect.center)
         
         self.status = self.STATE_ENTRY
         self.target_y = random.randint(50, 100)
@@ -45,19 +45,21 @@ class Sniper(BaseEnemy):
             self.update_recover()
 
     def update_entry(self):
-        self.rect.y += 2
-        if self.rect.centery >= self.target_y:
-            self.rect.centery = self.target_y
+        self.stable_center.y += 2
+        if self.stable_center.y >= self.target_y:
+            self.stable_center.y = self.target_y
             self.status = self.STATE_PATROL
+        self.rect.center = self.stable_center
 
     def update_patrol(self):
-        self.rect.x += self.speed_x * self.direction
-        if self.rect.right >= WIDTH:
-            self.rect.right = WIDTH
+        self.stable_center.x += self.speed_x * self.direction
+        if self.stable_center.x >= WIDTH - self.rect.width // 2:
+            self.stable_center.x = WIDTH - self.rect.width // 2
             self.direction = -1 
-        elif self.rect.left <= 0:
-            self.rect.left = 0
+        elif self.stable_center.x <= self.rect.width // 2:
+            self.stable_center.x = self.rect.width // 2
             self.direction = 1
+        self.rect.center = self.stable_center
         
         if random.randrange(120) == 0:
             self.status = self.STATE_AIM
@@ -68,6 +70,7 @@ class Sniper(BaseEnemy):
             self.locked_target = None
 
     def update_aim(self):
+        aim_position = self.rect.center
         now = pygame.time.get_ticks()
         elapsed_time = now - self.aim_start_time
 
@@ -79,24 +82,42 @@ class Sniper(BaseEnemy):
             self.locked_target = player_position
         
         # 旋轉圖片
-        center = self.rect.center
         self.current_angle = self.locked_angle
         self.image = pygame.transform.rotate(self.original_image, self.current_angle)
-        self.rect = self.image.get_rect(center = center)
+        self.rect = self.image.get_rect(center = self.stable_center)
 
-        # 蓄力震動 (快要發射前的警告)
-        if elapsed_time > 1500:
-            self.rect.center = (center[0] + random.randint(-2, 2), 
-                                center[1] + random.randint(-2, 2))
+        # 蓄力震動與持續粒子效果 (快要發射前的警告)
+        if elapsed_time > 1000:
+            if not hasattr(self, 'charging_sound_playing') or not self.charging_sound_playing:
+                self.res['sound']['charging'].play()
+                self.charging_sound_playing = True
+            
+            # 蓄力震動
+            self.rect.center = (self.stable_center.x + random.randint(-2, 2), 
+                                self.stable_center.y + random.randint(-2, 2))
+            
+            # 每 100 毫秒產生一次匯聚粒子
+            if not hasattr(self, 'last_charge_particle_time'):
+                self.last_charge_particle_time = 0
+            
+            if now - self.last_charge_particle_time > 100:
+                from sprites.particle import Particle
+                Particle.create_implosion(self.game, self.rect.center, (215, 30, 70), count=5, radius=60)
+                self.last_charge_particle_time = now
 
         if elapsed_time > 2000:
+            if hasattr(self, 'charging_sound_playing') and self.charging_sound_playing:
+                self.res['sound']['charging'].fadeout(300)
+                self.charging_sound_playing = False
             self.status = self.STATE_FIRE
             self.fire_start_time = now
+            self.has_fired = False # 重置發射標記
+            self.rect.center = aim_position
 
     def update_fire(self):
         if not self.has_fired:
             # 依據鎖定的角度產生雷射
-            Laser(self.res, self.game, self.rect.center, self.locked_angle)
+            Laser(self.game, self.stable_center, self.locked_angle)
             self.has_fired = True
             self.res['sound']['laser_shoot'].play()
 
@@ -105,11 +126,10 @@ class Sniper(BaseEnemy):
             self.status = self.STATE_RECOVER
 
     def update_recover(self):
-        # 使用 lerp (線性插值) 平滑轉回 0 度
         # current_angle 慢慢向 0 靠攏
         self.current_angle += (0 - self.current_angle) * 0.1 
 
-        center = self.rect.center
+        center = self.stable_center
         self.image = pygame.transform.rotate(self.original_image, self.current_angle)
         self.rect = self.image.get_rect(center = center)
 
@@ -125,10 +145,10 @@ class Sniper(BaseEnemy):
         # 只有在瞄準狀態下才畫紅線
         if self.status == self.STATE_AIM and self.locked_target:
             # 算出指向玩家的方向並標準化
-            direction = pygame.math.Vector2(self.locked_target) - self.rect.center
+            direction = pygame.math.Vector2(self.locked_target) - self.stable_center
             if direction.length() > 0:
                 direction = direction.normalize()
             
-            # 把紅線畫長一點（例如 1000 像素，足以貫穿畫面）
-            end_pos = self.rect.center + direction * 1000
-            pygame.draw.line(screen, (255, 0, 0), self.rect.center, end_pos, 2)
+            # 把紅線畫長一點
+            end_pos = pygame.math.Vector2(self.stable_center) + direction * 1000
+            pygame.draw.line(screen, (255, 0, 0), self.stable_center, end_pos, 2)
