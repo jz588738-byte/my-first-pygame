@@ -5,6 +5,7 @@ from setting import WIDTH, HEIGHT
 
 class Laser(pygame.sprite.Sprite):
     def __init__(self, game, pos, angle):
+        self._layer = 4  # 雷射圖層
         super().__init__()
         self.game = game
         self.res = game.res
@@ -44,8 +45,7 @@ class Laser(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=center_pos)
         
         self.mask = pygame.mask.from_surface(self.image)
-        self.radius = self.thickness // 2 # 如果還是要用 collide_circle，這個值會失效，必須改用 collide_mask
-        
+                
         # 動畫次數計數
         self.play_count = 0 
         self.max_play_count = 1 # 播完 1 次動畫就消失

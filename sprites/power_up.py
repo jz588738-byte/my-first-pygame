@@ -4,6 +4,7 @@ import random
 
 class Power_up(pygame.sprite.Sprite):
     def __init__(self, game, center):
+        self._layer = 2  # 寶物圖層：在隕石上面
         super().__init__()
         self.game = game
         self.res = game.res
