@@ -2,6 +2,7 @@ import pygame
 
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, game, center, size, particle_color = (255, 165, 0)):
+        self._layer = 7  # 爆炸圖層：在雷射和飛機上面
         super().__init__()
         self.game = game
         self.res = game.res

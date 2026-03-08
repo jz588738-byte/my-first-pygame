@@ -5,6 +5,7 @@ from setting import WIDTH, HEIGHT
 
 class Laser(pygame.sprite.Sprite):
     def __init__(self, game, pos, angle):
+        self._layer = 4  # 雷射圖層
         super().__init__()
         self.game = game
         self.res = game.res
@@ -13,9 +14,10 @@ class Laser(pygame.sprite.Sprite):
         self.last_update = pygame.time.get_ticks()
         self.frame_rate = 50
         self.angle = angle
+
         self.damage = 30
-        self.thickness = 20 # 調整這個數字可以改變雷射粗細 (原本大概是原圖寬度或 2)
-        self.has_damaged_player = False # 用來防止雷射「每一幀連續扣血」
+        self.thickness = 20
+        self.has_damaged_player = False
         self.pos = pygame.math.Vector2(pos)
         
         # 1. 射線方向
@@ -44,8 +46,7 @@ class Laser(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=center_pos)
         
         self.mask = pygame.mask.from_surface(self.image)
-        self.radius = self.thickness // 2 # 如果還是要用 collide_circle，這個值會失效，必須改用 collide_mask
-        
+                
         # 動畫次數計數
         self.play_count = 0 
         self.max_play_count = 1 # 播完 1 次動畫就消失

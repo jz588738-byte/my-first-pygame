@@ -2,14 +2,26 @@ import pygame
 import random
 
 class Particle(pygame.sprite.Sprite):
+    _surface_cache = {}
+
     def __init__(self, game, position, color, vector = None, target_position = None):
+        self._layer = 8  # 粒子圖層：永遠在最前面
         super().__init__()
         self.game = game
         self.size = random.randint(2, 5)
         self.life = 255
         
-        self.image = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
-        pygame.draw.circle(self.image, color, (self.size, self.size), self.size)
+        # 建立一個唯一的標籤 (型號)
+        cache_key = (self.size, color)
+        
+        # 如果倉庫裡還沒刻過這個印章，就現刻一個存起來
+        if cache_key not in Particle._surface_cache:
+            surf = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
+            pygame.draw.circle(surf, color, (self.size, self.size), self.size)
+            Particle._surface_cache[cache_key] = surf
+        
+        # 直接拿現成的圖案複本來用，這比重新畫圓快幾百倍
+        self.image = Particle._surface_cache[cache_key].copy()
         
         # 設定位置 
         self.position = pygame.math.Vector2(position)

@@ -6,12 +6,14 @@ import time
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game):
+        self._layer = 5  # 玩家圖層
         super().__init__()
         self.game = game
         self.res = game.res
         self.image = pygame.transform.scale(self.res['img']['player'],(50,38))
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
         self.radius = 20
         self.rect.centerx = WIDTH // 2
         self.rect.bottom = HEIGHT - 10
@@ -43,6 +45,7 @@ class Player(pygame.sprite.Sprite):
             self.is_respawn = False
             self.rect.centerx = WIDTH // 2
             self.rect.bottom = HEIGHT - 10
+        
         #無敵閃爍處理
         if self.is_invincibility:
             if now - self.respawn_time > self.invincibility_duration:
@@ -55,11 +58,14 @@ class Player(pygame.sprite.Sprite):
 
         #鍵盤控制邏輯
         if not self.is_respawn:
+            if self.lives <= 0:
+                self.kill()
             key_pressed = pygame.key.get_pressed()
             if key_pressed[pygame.K_d]:
                 self.rect.x += self.speedx
             if key_pressed[pygame.K_a]:
                 self.rect.x -= self.speedx
+            
             #邊界控制
             if self.rect.right > WIDTH:
                 self.rect.right = WIDTH

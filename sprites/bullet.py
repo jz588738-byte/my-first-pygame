@@ -3,6 +3,7 @@ import pygame
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
+        self._layer = 6  # 子彈圖層
         super().__init__()
         self.game = game
         self.res = game.res

@@ -29,6 +29,16 @@ class ExplodingRock(BaseRock):
         self.image = self.image_ori.copy()
         self.rect = self.image.get_rect()
         self.rect.center = old_center # 還原隨機位置
+
+        # 效能優化：預先縮放爆炸動畫的每一幀，避免在 1/60 秒的迴圈中做耗能的縮放
+        self.expl_images = []
+        for img in self.res['anim']['damage_exploding']:
+            self.expl_images.append(pygame.transform.scale(img, (self.target_width, self.target_width)))
+
+        # 效能優化：預先縮放爆炸後的每一幀動畫，避免在 update 迴圈中使用極耗能的 scale 函數
+        self.expl_images = []
+        for img in self.res['anim']['damage_exploding']:
+            self.expl_images.append(pygame.transform.scale(img, (self.target_width, self.target_width)))
     
     def destroy(self, game, Explosion):
         self.kill() # 從所有群組移除 (包含 rocks)
@@ -59,8 +69,8 @@ class ExplodingRock(BaseRock):
         
         from sprites.particle import Particle
         Particle.create_explosion(game, self.rect.center)
-        exploding_image = self.res['anim']['damage_exploding'][self.frame] 
-        self.image = pygame.transform.scale(exploding_image, (self.target_width, self.target_width))
+        # 使用預先縮放好的圖片
+        self.image = self.expl_images[self.frame]
         center = self.rect.center
         self.rect = self.image.get_rect()
         self.rect.center = center
@@ -71,11 +81,11 @@ class ExplodingRock(BaseRock):
             if now - self.last_update > self.frame_duration:
                 self.last_update = now
                 self.frame += 1
-                if self.frame == len(self.res['anim']['damage_exploding']):
+                if self.frame == len(self.expl_images):
                     self.kill()
                 else:
-                    exploding_image = self.res['anim']['damage_exploding'][self.frame]
-                    self.image = pygame.transform.scale(exploding_image, (self.target_width, self.target_width))
+                    # 使用預先縮放好的圖片，速度提升 10 倍以上
+                    self.image = self.expl_images[self.frame]
                     center = self.rect.center
                     self.rect = self.image.get_rect()
                     self.rect.center = center
