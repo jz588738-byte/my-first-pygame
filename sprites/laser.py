@@ -14,9 +14,10 @@ class Laser(pygame.sprite.Sprite):
         self.last_update = pygame.time.get_ticks()
         self.frame_rate = 50
         self.angle = angle
+
         self.damage = 30
-        self.thickness = 20 # 調整這個數字可以改變雷射粗細 (原本大概是原圖寬度或 2)
-        self.has_damaged_player = False # 用來防止雷射「每一幀連續扣血」
+        self.thickness = 20
+        self.has_damaged_player = False
         self.pos = pygame.math.Vector2(pos)
         
         # 1. 射線方向
