@@ -23,8 +23,8 @@ class Game:
         self.reset()
 
     def reset(self):
-        # 創立各物件的群組
-        self.all_sprites = pygame.sprite.Group()
+        # 創立各物件的群組 (使用 LayeredUpdates 來管理誰在誰上面)
+        self.all_sprites = pygame.sprite.LayeredUpdates()
         self.rocks = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.powers = pygame.sprite.Group()
@@ -59,12 +59,12 @@ class Game:
         # 1. 畫背景
         screen.blit(self.res['img']['background'], (0,0))
         
-        # 2. 畫所有 Sprite
-        self.all_sprites.draw(screen)
+        # 繪製所有精靈
+        self.all_sprites.draw(self.screen)
         
-        for sprite in self.all_sprites:
-            if hasattr(sprite, 'draw_extras'):
-                sprite.draw_extras(screen)
+        for enemy in self.enemies:
+            if hasattr(enemy, 'draw_extras'):
+                enemy.draw_extras(self.screen)
         
         # 4. 畫 UI
         Draw_health(screen, self.player.health, 5, 15)
@@ -95,8 +95,8 @@ while running:
     key_pressed = pygame.key.get_pressed()
     if key_pressed[pygame.K_SPACE]:
         game.player.shoot(game.all_sprites, game.bullets)
-    # 自動補充隕石 (維持 MIN_ROCKS~MAX_ROCKS 顆)
-    while len(game.rocks) < MIN_ROCKS:
+    
+    while len(game.rocks) + len(game.enemies) < MIN_ROCKS:
         game.new_enemy()
 
     # 更新全部物件狀態
