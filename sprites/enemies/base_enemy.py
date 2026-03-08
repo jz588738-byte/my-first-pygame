@@ -5,6 +5,7 @@ from ..power_up import Power_up
 
 class BaseEnemy(pygame.sprite.Sprite):
     def __init__(self, game, health, score_value, particle_color = (255, 165, 0)):
+        self._layer = 3  # 敵機圖層：在隕石上面
         super().__init__()
         self.res = game.res
         self.game = game
