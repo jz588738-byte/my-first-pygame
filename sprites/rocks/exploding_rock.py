@@ -30,11 +30,6 @@ class ExplodingRock(BaseRock):
         self.rect = self.image.get_rect()
         self.rect.center = old_center # 還原隨機位置
 
-        # 效能優化：預先縮放爆炸動畫的每一幀，避免在 1/60 秒的迴圈中做耗能的縮放
-        self.expl_images = []
-        for img in self.res['anim']['damage_exploding']:
-            self.expl_images.append(pygame.transform.scale(img, (self.target_width, self.target_width)))
-
         # 效能優化：預先縮放爆炸後的每一幀動畫，避免在 update 迴圈中使用極耗能的 scale 函數
         self.expl_images = []
         for img in self.res['anim']['damage_exploding']:
