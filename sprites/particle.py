@@ -5,7 +5,7 @@ class Particle(pygame.sprite.Sprite):
     _surface_cache = {}
 
     def __init__(self, game, position, color, vector = None, target_position = None):
-        self._layer = 8  # 粒子圖層：永遠在最前面
+        self._layer = 8
         super().__init__()
         self.game = game
         self.size = random.randint(2, 5)
@@ -45,8 +45,8 @@ class Particle(pygame.sprite.Sprite):
         self.life -= 5
         if self.life <= 0:
             self.kill()
-        else:
-            self.image.set_alpha(self.life) # 效率極高地改變透明度
+        elif self.life % 25 == 0:  # 每降 25 點才重新渲染一次透明度
+            self.image.set_alpha(self.life)
 
         if self.target_position:
             if (self.target_position  - self.position).length() <= 4:
