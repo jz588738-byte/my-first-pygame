@@ -18,7 +18,7 @@ class BaseEnemy(pygame.sprite.Sprite):
         self.image = None
         self.rect = None
         #自身撞到玩家
-        self.damage = 60
+        self.crash_damage = 60
 
     def take_damage(self, damage):
         self.health -= damage
