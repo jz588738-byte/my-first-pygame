@@ -14,19 +14,18 @@ class EntryState(SniperBaseState):
         self.owner.status_label = "Entry" # 用於除錯
         self.target_y = random.randint(50, 100)
 
-    def update(self):
+    def update(self, events=None):
         self.owner.stable_center.y += 2
         if self.owner.stable_center.y >= self.target_y:
             self.owner.stable_center.y = self.target_y
-            from .states import PatrolState
-            self.owner.state_machine.change_state(PatrolState(self.owner))
+            self.owner.state_machine.change_state("PatrolState")
         self.owner.rect.center = self.owner.stable_center
 
 class PatrolState(SniperBaseState):
     def enter(self):
         self.owner.status_label = "Patrol"
 
-    def update(self):
+    def update(self, events=None):
         self.owner.stable_center.x += self.owner.speed_x * self.owner.direction
         half_width = self.owner.rect.width // 2
         if self.owner.stable_center.x >= WIDTH - half_width:
@@ -38,8 +37,7 @@ class PatrolState(SniperBaseState):
         self.owner.rect.center = self.owner.stable_center
         
         if random.randrange(120) == 0:
-            from .states import AimState
-            self.owner.state_machine.change_state(AimState(self.owner))
+            self.owner.state_machine.change_state("AimState")
 
 class AimState(SniperBaseState):
     def enter(self):
@@ -49,7 +47,7 @@ class AimState(SniperBaseState):
         self.last_charge_particle_time = 0
         self.charging_sound_playing = False
 
-    def update(self):
+    def update(self, events=None):
         now = pygame.time.get_ticks()
         elapsed = now - self.start_time
 
@@ -83,8 +81,7 @@ class AimState(SniperBaseState):
                 self.last_charge_particle_time = now
 
         if elapsed > 2000:
-            from .states import FireState
-            self.owner.state_machine.change_state(FireState(self.owner))
+            self.owner.state_machine.change_state("FireState")
 
     def exit(self):
         if self.charging_sound_playing:
@@ -106,16 +103,15 @@ class FireState(SniperBaseState):
         Laser(self.game, self.owner.stable_center, self.owner.locked_angle)
         self.res['sound']['laser_shoot'].play()
 
-    def update(self):
+    def update(self, events=None):
         if pygame.time.get_ticks() - self.start_time > 600:
-            from .states import RecoverState
-            self.owner.state_machine.change_state(RecoverState(self.owner))
+            self.owner.state_machine.change_state("RecoverState")
 
 class RecoverState(SniperBaseState):
     def enter(self):
         self.owner.status_label = "Recover"
 
-    def update(self):
+    def update(self, events=None):
         self.owner.current_angle += (0 - self.owner.current_angle) * 0.1 
         self.owner.image = pygame.transform.rotate(self.owner.original_image, self.owner.current_angle)
         self.owner.rect = self.owner.image.get_rect(center=self.owner.stable_center)
@@ -124,5 +120,4 @@ class RecoverState(SniperBaseState):
             self.owner.current_angle = 0
             self.owner.image = self.owner.original_image.copy()
             self.owner.rect = self.owner.image.get_rect(center=self.owner.stable_center)
-            from .states import PatrolState
-            self.owner.state_machine.change_state(PatrolState(self.owner))
+            self.owner.state_machine.change_state("PatrolState")

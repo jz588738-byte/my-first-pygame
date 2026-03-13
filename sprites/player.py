@@ -103,3 +103,31 @@ class Player(pygame.sprite.Sprite):
             self.shoot_delay -= 50
         self.grade += 1
         self.grade_time = pygame.time.get_ticks()
+
+    def take_damage(self, amount, expl_pos=None):
+        if self.is_invincibility:
+            return None
+            
+        self.health -= amount
+        
+        # 產生小爆炸
+        if expl_pos is None:
+            expl_pos = self.rect.center
+            
+        from .explosion import Explosion
+        expl = Explosion(self.game, expl_pos, 'sm')
+        self.game.all_sprites.add(expl)
+        self.res['sound']['crash_player'].play()
+        
+        # 檢查死亡
+        death_expl = None
+        if self.health <= 0:
+            death_expl = Explosion(self.game, self.rect.center, 'player_die')
+            self.game.all_sprites.add(death_expl)
+            self.res['sound']['player_die'].play()
+            self.lives -= 1
+            if self.lives > 0:
+                self.health = 100
+                self.respawn()
+        
+        return death_expl

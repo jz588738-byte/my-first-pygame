@@ -52,8 +52,6 @@ class BaseRock(pygame.sprite.Sprite):
 
     # 隕石旋轉
     def rotate(self):
-        # 效能優化：如果隕石還在螢幕外面（還沒掉下來或已經飛走），就不要轉它
-        # 因為 transform.rotate 是很吃力的數學運算，對看不見的東西做運算純屬浪費
         if self.rect.bottom < 0 or self.rect.top > HEIGHT or self.rect.right > WIDTH or self.rect.right < 0:
             return
 
