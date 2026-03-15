@@ -12,7 +12,7 @@ class SniperBaseState(State):
 class EntryState(SniperBaseState):
     def enter(self):
         self.owner.status_label = "Entry" # 用於除錯
-        self.target_y = random.randint(50, 100)
+        self.target_y = random.randint(75, 100)
 
     def update(self, events=None):
         self.owner.stable_center.y += 2
@@ -77,7 +77,7 @@ class AimState(SniperBaseState):
             # 粒子
             if now - self.last_charge_particle_time > 100:
                 from ...particle import Particle
-                Particle.create_implosion(self.game, self.owner.rect.center, (215, 30, 70), count=5, radius=60)
+                Particle.create_implosion(self.game, self.owner.rect, (215, 30, 70), count=5, radius=60)
                 self.last_charge_particle_time = now
 
         if elapsed > 2000:
