@@ -64,7 +64,8 @@ class Particle(pygame.sprite.Sprite):
             game.all_sprites.add(p)
 
     @staticmethod
-    def create_implosion(game, target_position, color, count = 10, radius = 50, speed_range = (2, 5)):
+    def create_implosion(game, target_rect, color, count = 10, radius = 50, speed_range = (2, 5)):
+        target_position = target_rect.center
         """粒子從四周往目標點匯集的蓄力效果"""
         for _ in range(count):
             # 1. 在圓周上隨機找一個起始點
@@ -89,3 +90,20 @@ class Particle(pygame.sprite.Sprite):
         Particle.create_burst(game, position, (255, 255, 255), 10, (1, 4)) # 白色核心
         Particle.create_burst(game, position, (255, 100, 0), 10, (1, 6))   # 橘色火花
         Particle.create_burst(game, position, (255, 255, 0), 10, (1, 4))  # 黃色餘燼
+
+    @staticmethod
+    def create_fire(game, target_rect, color, count=(3, 5), speed_range=(2, 5)):
+        spawn_position = target_rect.top
+        count = random.randint(*count)
+        for _ in range(count):
+            angle = random.uniform(240, 300)
+            direction = pygame.math.Vector2()
+            direction.from_polar((1, angle))
+
+            if direction.length() > 0:
+                speed = random.uniform(*speed_range)
+                vector =  direction * speed
+                p = Particle(game, target_rect.center, color, vector)
+                game.all_sprites.add(p)
+        
+        

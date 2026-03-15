@@ -37,6 +37,15 @@ def Load_resources():
     res['img']['sniper'] = pygame.image.load(os.path.join(BASE_DIR, 'image','sniper.png')).convert()
     res['img']['sniper'] = pygame.transform.scale(res['img']['sniper'], (50, 50))
     res['img']['sniper'].set_colorkey(BLACK)
+    res['img']['rusher'] = pygame.image.load(os.path.join(BASE_DIR, 'image', 'rusher.png')).convert()
+    res['img']['rusher'] = pygame.transform.scale(res['img']['rusher'], (50, 50))
+    res['img']['rusher'].set_colorkey(BLACK)
+    res['img']['rusher_go'] = pygame.image.load(os.path.join(BASE_DIR, 'image', 'rusher_go.png')).convert()
+    res['img']['rusher_go'] = pygame.transform.scale(res['img']['rusher_go'], (50, 50))
+    res['img']['rusher_go'].set_colorkey(BLACK)
+    res['img']['rusher_burst'] = pygame.image.load(os.path.join(BASE_DIR, 'image', 'rusher_burst.png')).convert()
+    res['img']['rusher_burst'] = pygame.transform.scale(res['img']['rusher_burst'], (50, 50))
+    res['img']['rusher_burst'].set_colorkey(BLACK)
 
     #隕石圖片
     res['img']['rocks'] = []
