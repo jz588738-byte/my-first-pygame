@@ -1,3 +1,5 @@
+from setting import HEIGHT
+from setting import FPS
 import pygame
 import random
 from setting import *
@@ -55,13 +57,17 @@ class Game:
         if len(self.rocks) >= MAX_ROCKS:
             return
         spawn_rates = {
-            BaseRock: 40,
-            SplitRock: 30,
-            ExplodingRock: 20,
-            Sniper: 10,
+            BaseRock: 10,
+            SplitRock: 20,
+            ExplodingRock: 10,
+            Sniper: 5,
+            Rusher: 55
         }
         enemy_class = random.choices(list(spawn_rates.keys()), weights=list(spawn_rates.values()), k=1)[0]
-        enemy_class(self)
+        if enemy_class == Rusher:
+            enemy_class.create_rusher(self)
+        else:
+            enemy_class(self)
 
     def draw(self, screen):
         screen.blit(self.res['img']['background'], (0, 0))
@@ -73,6 +79,9 @@ class Game:
         Draw_health(screen, self.player.health, 5, 15)
         Draw_lives(screen, self.player.lives, self.res['img']['player_mini'], WIDTH - 100, 15)
         Draw_text(screen, str(self.score), 18, WIDTH // 2, 0)
+        Draw_text(screen, 'FPS: ' + str(clock.get_fps()), 18, 100, HEIGHT - 20)
+        Draw_text(screen, 'ms: ' + str(self.frame_ms), 18, 500, HEIGHT - 40)
+        
 
 # 建立遊戲實例
 game = Game(res, screen)
@@ -80,14 +89,18 @@ game = Game(res, screen)
 # ── 主迴圈 ──
 running = True
 while running:
-    clock.tick(FPS)
+    # 算 dt (秒)
+    frame_ms = clock.tick(FPS)
+    dt = min(frame_ms / 1000.0, 0.1) # 限制最大 dt 避面大斷電跳躍
+    game.frame_ms = frame_ms
+    
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:
             running = False
 
     # 全部交給狀態機處理
-    game.state_machine.update(events)
+    game.state_machine.update(dt, events)
     game.state_machine.draw(screen)
     pygame.display.update()
 

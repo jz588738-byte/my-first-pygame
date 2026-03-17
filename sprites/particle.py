@@ -4,12 +4,16 @@ import random
 class Particle(pygame.sprite.Sprite):
     _surface_cache = {}
 
-    def __init__(self, game, position, color, vector = None, target_position = None):
+    def __init__(self, game, position, color, vector=None, target_position=None, life_range=None):
         self._layer = 8
         super().__init__()
         self.game = game
         self.size = random.randint(2, 5)
         self.life = 255
+        self.life_time = None
+        if life_range:
+            self.life_time = random.randint(int(life_range[0] * 1000), int(life_range[1] * 1000))
+            self.start_time = pygame.time.get_ticks()
         
         # 建立一個唯一的標籤 (型號)
         cache_key = (self.size, color)
@@ -36,17 +40,20 @@ class Particle(pygame.sprite.Sprite):
         else:
             self.target_position = None
 
-    def update(self):
+    def update(self, dt):
         # 位移邏輯
-        self.position += self.vector
+        self.position += self.vector * dt * 60
         self.rect.center = self.position # 更新碰撞盒位置
+        if self.life_time is not None:
+            if pygame.time.get_ticks() - self.start_time > self.life_time:
+                self.kill()
         
         # 透明度邏輯
-        self.life -= 5
+        self.life -= 5 * dt * 60
         if self.life <= 0:
             self.kill()
-        elif self.life % 25 == 0:  # 每降 25 點才重新渲染一次透明度
-            self.image.set_alpha(self.life)
+        else:
+            self.image.set_alpha(max(0, int(self.life)))
 
         if self.target_position:
             if (self.target_position  - self.position).length() <= 4:
@@ -103,7 +110,7 @@ class Particle(pygame.sprite.Sprite):
             if direction.length() > 0:
                 speed = random.uniform(*speed_range)
                 vector =  direction * speed
-                p = Particle(game, target_rect.center, color, vector)
+                p = Particle(game, target_rect.center, color, vector=vector, life_range=(0.25, 0.5))
                 game.all_sprites.add(p)
         
         

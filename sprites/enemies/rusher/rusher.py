@@ -8,13 +8,14 @@ from .rusher_states import EntryState, WarningState, BurstState
 
 class Rusher(BaseEnemy):
     def __init__(self, game, spawn_x):
-        super().__init__(game, health=4, score_value=150, particle_color=(65, 65, 75))
+        super().__init__(game, health=5, score_value=150, particle_color=(65, 65, 75))
         self.image = self.res['img']['rusher']
         self.rect = self.image.get_rect()
 
         self.rect.centerx = spawn_x
         self.rect.bottom = 0
-        self.damage = 80
+        self.pos = pygame.Vector2(self.rect.center)
+        self.damage = 40
         self.speed_y = 8
         self.burst_speed_y = 12
         self.has_boosted = False
@@ -26,8 +27,8 @@ class Rusher(BaseEnemy):
         
         self.state_machine.change_state('EntryState')
     
-    def update(self, events=None):
-        self.state_machine.update(events)
+    def update(self, dt, events=None):
+        self.state_machine.update(dt, events)
 
     def draw_extras(self, screen):
         self.state_machine.draw(screen)
