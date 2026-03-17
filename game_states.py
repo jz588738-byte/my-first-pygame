@@ -15,7 +15,7 @@ class MenuState(GameBaseState):
     def enter(self):
         pygame.mixer.music.play(-1)
 
-    def update(self, events):
+    def update(self, dt, events):
         for event in events:
             if event.type == pygame.KEYUP:
                 self.owner.state_machine.change_state("PlayState")
@@ -31,7 +31,7 @@ class PlayState(GameBaseState):
         self.game.reset()
         pygame.mixer.music.play(-1)
 
-    def update(self, events=None):
+    def update(self, dt, events=None):
         game = self.game
 
         # 自動射擊
@@ -44,7 +44,7 @@ class PlayState(GameBaseState):
             game.new_enemy()
 
         # 更新所有精靈
-        game.all_sprites.update()
+        game.all_sprites.update(dt)
 
         # ── 碰撞處理 ──
         # 石頭 vs 子彈
@@ -101,7 +101,7 @@ class PlayState(GameBaseState):
         self.game.draw(screen)
 
 class GameOverState(GameBaseState):
-    def update(self, events):
+    def update(self, dt, events):
         for event in events:
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_r:

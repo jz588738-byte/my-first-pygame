@@ -4,7 +4,7 @@ import os
 from setting import  *
 
 #取得目前的檔案目錄
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 def Load_resources():
     res = {

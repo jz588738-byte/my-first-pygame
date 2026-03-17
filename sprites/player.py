@@ -17,7 +17,8 @@ class Player(pygame.sprite.Sprite):
         self.radius = 20
         self.rect.centerx = WIDTH // 2
         self.rect.bottom = HEIGHT - 10
-        self.speedx = 8
+        self.pos = pygame.Vector2(self.rect.center)
+        self.speedx = 480  # 8 * 60 (assuming 60 FPS baseline)
         #復活的參數
         self.lives = 3
         self.health = 100
@@ -32,7 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.shoot_delay = 250
         self.last_shot = pygame.time.get_ticks()
 
-    def update(self):
+    def update(self, dt):
         now = pygame.time.get_ticks()
         if self.grade > 1 and now - self.grade_time > 10000:
             self.grade -= 1
@@ -45,6 +46,7 @@ class Player(pygame.sprite.Sprite):
             self.is_respawn = False
             self.rect.centerx = WIDTH // 2
             self.rect.bottom = HEIGHT - 10
+            self.pos = pygame.Vector2(self.rect.center)
         
         #無敵閃爍處理
         if self.is_invincibility:
@@ -62,15 +64,19 @@ class Player(pygame.sprite.Sprite):
                 self.kill()
             key_pressed = pygame.key.get_pressed()
             if key_pressed[pygame.K_d]:
-                self.rect.x += self.speedx
+                self.pos.x += self.speedx * dt
             if key_pressed[pygame.K_a]:
-                self.rect.x -= self.speedx
+                self.pos.x -= self.speedx * dt
+            
+            self.rect.centerx = round(self.pos.x)
             
             #邊界控制
             if self.rect.right > WIDTH:
                 self.rect.right = WIDTH
+                self.pos.x = self.rect.centerx
             if self.rect.left < 0:
                 self.rect.left = 0
+                self.pos.x = self.rect.centerx
 
     def shoot(self, all_sprites, bullets):
         now = pygame.time.get_ticks()
@@ -97,6 +103,7 @@ class Player(pygame.sprite.Sprite):
         self.is_invincibility = True
         self.respawn_time = pygame.time.get_ticks()
         self.rect.center = (WIDTH // 2, HEIGHT + 500)
+        self.pos = pygame.Vector2(self.rect.center)
 
     def grade_up(self):
         if self.grade == 1:

@@ -2,6 +2,7 @@ import pygame
 import random
 from state_machine import State
 from setting import *
+from ...particle import Particle
 
 class SniperBaseState(State):
     def __init__(self, owner):
@@ -14,19 +15,19 @@ class EntryState(SniperBaseState):
         self.owner.status_label = "Entry" # 用於除錯
         self.target_y = random.randint(75, 100)
 
-    def update(self, events=None):
-        self.owner.stable_center.y += 2
+    def update(self, dt, events=None):
+        self.owner.stable_center.y += 2 * dt * 60
         if self.owner.stable_center.y >= self.target_y:
             self.owner.stable_center.y = self.target_y
             self.owner.state_machine.change_state("PatrolState")
-        self.owner.rect.center = self.owner.stable_center
+        self.owner.rect.center = (round(self.owner.stable_center.x), round(self.owner.stable_center.y))
 
 class PatrolState(SniperBaseState):
     def enter(self):
         self.owner.status_label = "Patrol"
 
-    def update(self, events=None):
-        self.owner.stable_center.x += self.owner.speed_x * self.owner.direction
+    def update(self, dt, events=None):
+        self.owner.stable_center.x += self.owner.speed_x * self.owner.direction * dt * 60
         half_width = self.owner.rect.width // 2
         if self.owner.stable_center.x >= WIDTH - half_width:
             self.owner.stable_center.x = WIDTH - half_width
@@ -34,7 +35,7 @@ class PatrolState(SniperBaseState):
         elif self.owner.stable_center.x <= half_width:
             self.owner.stable_center.x = half_width
             self.owner.direction = 1
-        self.owner.rect.center = self.owner.stable_center
+        self.owner.rect.center = (round(self.owner.stable_center.x), round(self.owner.stable_center.y))
         
         if random.randrange(120) == 0:
             self.owner.state_machine.change_state("AimState")
@@ -47,7 +48,7 @@ class AimState(SniperBaseState):
         self.last_charge_particle_time = 0
         self.charging_sound_playing = False
 
-    def update(self, events=None):
+    def update(self, dt, events=None):
         now = pygame.time.get_ticks()
         elapsed = now - self.start_time
 
@@ -76,7 +77,6 @@ class AimState(SniperBaseState):
             
             # 粒子
             if now - self.last_charge_particle_time > 100:
-                from ...particle import Particle
                 Particle.create_implosion(self.game, self.owner.rect, (215, 30, 70), count=5, radius=60)
                 self.last_charge_particle_time = now
 
@@ -103,7 +103,7 @@ class FireState(SniperBaseState):
         Laser(self.game, self.owner.stable_center, self.owner.locked_angle)
         self.res['sound']['laser_shoot'].play()
 
-    def update(self, events=None):
+    def update(self, dt, events=None):
         if pygame.time.get_ticks() - self.start_time > 600:
             self.owner.state_machine.change_state("RecoverState")
 
@@ -111,8 +111,8 @@ class RecoverState(SniperBaseState):
     def enter(self):
         self.owner.status_label = "Recover"
 
-    def update(self, events=None):
-        self.owner.current_angle += (0 - self.owner.current_angle) * 0.1 
+    def update(self, dt, events=None):
+        self.owner.current_angle += (0 - self.owner.current_angle) * 0.1 * dt * 60
         self.owner.image = pygame.transform.rotate(self.owner.original_image, self.owner.current_angle)
         self.owner.rect = self.owner.image.get_rect(center=self.owner.stable_center)
 

@@ -54,7 +54,7 @@ class Laser(pygame.sprite.Sprite):
         self.game.all_sprites.add(self)
         self.game.lasers.add(self) 
 
-    def update(self):
+    def update(self, dt):
         # 只需要更新動畫，不用移動
         now = pygame.time.get_ticks()
         if now - self.last_update > self.frame_rate:

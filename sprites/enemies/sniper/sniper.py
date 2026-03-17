@@ -37,9 +37,9 @@ class Sniper(BaseEnemy):
         
         self.state_machine.change_state("EntryState")
 
-    def update(self, events=None):
+    def update(self, dt, events=None):
         # 委託給狀態機運作
-        self.state_machine.update(events)
+        self.state_machine.update(dt, events)
 
     def kill(self):
         if self.state_machine.current_state:

@@ -70,7 +70,7 @@ class ExplodingRock(BaseRock):
         self.rect = self.image.get_rect()
         self.rect.center = center
 
-    def update(self):
+    def update(self, dt):
         if self.is_exploding:
             now = pygame.time.get_ticks()
             if now - self.last_update > self.frame_duration:
@@ -85,4 +85,4 @@ class ExplodingRock(BaseRock):
                     self.rect = self.image.get_rect()
                     self.rect.center = center
         else:
-            super().update()
+            super().update(dt)

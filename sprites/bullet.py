@@ -12,9 +12,11 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = x
         self.rect.bottom = y
-        self.speedy = -10
+        self.pos = pygame.Vector2(self.rect.center)
+        self.speedy = -600  # -10 * 60
 
-    def update(self):
-        self.rect.y += self.speedy
+    def update(self, dt):
+        self.pos.y += self.speedy * dt
+        self.rect.centery = round(self.pos.y)
         if self.rect.bottom < 0:
             self.kill()

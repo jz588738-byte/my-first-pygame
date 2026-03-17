@@ -31,8 +31,9 @@ class SplitRock(BaseRock):
         if center:
             self.rect.center = center
 
-            self.speedy = random.randrange(2, 5)
-            self.speedx = random.randrange(-3, 3)
+            self.speedy = random.randrange(2, 5) * 60
+            self.speedx = random.randrange(-3, 3) * 60
+            self.pos = pygame.Vector2(self.rect.center)
 
     def destroy(self, game, Explosion):
         # 呼叫父類別的基本摧毀邏輯

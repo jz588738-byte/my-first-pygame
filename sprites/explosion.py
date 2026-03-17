@@ -21,7 +21,7 @@ class Explosion(pygame.sprite.Sprite):
         else:
             Particle.create_burst(self.game, center, particle_color)
 
-    def update(self):
+    def update(self, dt):
         now = pygame.time.get_ticks()
         if now - self.last_update > self.frame_rate:
             self.last_update = now

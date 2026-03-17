@@ -22,11 +22,11 @@ class BaseRock(pygame.sprite.Sprite):
         self.health = 1
         # 初始位置
         self.rect.x = random.randrange(0, WIDTH - self.rect.width)
-        self.rect.y = random.randrange(ROCK_SPAWN_Y_MIN, ROCK_SPAWN_Y_MAX)
-        self.speedy = random.randrange(ROCK_MIN_SPEED_Y, ROCK_MAX_SPEED_Y)
-        self.speedx = random.randrange(*ROCK_SPEED_X_RANGE)
+        self.pos = pygame.Vector2(self.rect.center)
+        self.speedy = random.randrange(ROCK_MIN_SPEED_Y, ROCK_MAX_SPEED_Y) * 60
+        self.speedx = random.randrange(*ROCK_SPEED_X_RANGE) * 60
         self.total_degree = 0
-        self.rot_degree = random.randrange(*ROCK_ROT_DEGREE_RANGE)
+        self.rot_degree = random.randrange(*ROCK_ROT_DEGREE_RANGE) * 60
 
     def destroy(self, game, Explosion):
         # 加分
@@ -51,26 +51,28 @@ class BaseRock(pygame.sprite.Sprite):
         self.kill()
 
     # 隕石旋轉
-    def rotate(self):
+    def rotate(self, dt):
         if self.rect.bottom < 0 or self.rect.top > HEIGHT or self.rect.right > WIDTH or self.rect.right < 0:
             return
 
         # 處理隕石的旋轉動畫
-        self.total_degree += self.rot_degree
+        self.total_degree += self.rot_degree * dt
         self.total_degree = self.total_degree % 360
         self.image = pygame.transform.rotate(self.image_ori, self.total_degree)
         center = self.rect.center
         self.rect = self.image.get_rect()
         self.rect.center = center
 
-    def update(self):
+    def update(self, dt):
         # 更新隕石的位置和狀態
-        self.rotate()
-        self.rect.x += self.speedx
-        self.rect.y += self.speedy
+        self.rotate(dt)
+        self.pos.x += self.speedx * dt
+        self.pos.y += self.speedy * dt
+        self.rect.center = (round(self.pos.x), round(self.pos.y))
         # 邊界控制：如果超出螢幕，重置位置
         if self.rect.top > HEIGHT or self.rect.left > WIDTH or self.rect.right < 0:
             self.rect.x = random.randrange(0, WIDTH - self.rect.width)
             self.rect.y = random.randrange(ROCK_SPAWN_Y_MAX, -40) 
-            self.speedy = random.randrange(ROCK_MIN_SPEED_Y, ROCK_MAX_SPEED_Y)
-            self.speedx = random.randrange(*ROCK_SPEED_X_RANGE)
+            self.pos = pygame.Vector2(self.rect.center)
+            self.speedy = random.randrange(ROCK_MIN_SPEED_Y, ROCK_MAX_SPEED_Y) * 60
+            self.speedx = random.randrange(*ROCK_SPEED_X_RANGE) * 60

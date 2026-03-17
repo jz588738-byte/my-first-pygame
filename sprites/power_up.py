@@ -13,9 +13,11 @@ class Power_up(pygame.sprite.Sprite):
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = center
-        self.speedy = 3
+        self.speedy = 180  # 3 * 60
+        self.pos = pygame.Vector2(self.rect.center)
 
-    def update(self):
-        self.rect.y += self.speedy
+    def update(self, dt):
+        self.pos.y += self.speedy * dt
+        self.rect.centery = round(self.pos.y)
         if self.rect.top > HEIGHT:
             self.kill()

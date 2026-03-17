@@ -9,7 +9,7 @@ class State:
     def exit(self):
         pass
 
-    def update(self, events = None):
+    def update(self, dt, events = None):
         pass
 
     def draw(self, screen):
@@ -38,9 +38,9 @@ class StateMachine:
         if self.current_state:
             self.current_state.enter()
 
-    def update(self, events = None):
+    def update(self, dt, events = None):
         if self.current_state:
-            self.current_state.update(events)
+            self.current_state.update(dt, events)
 
     def draw(self, screen):
         if self.current_state:
