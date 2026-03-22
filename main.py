@@ -12,6 +12,7 @@ from game_states import MenuState, PlayState, GameOverState
 # ── 初始化 ──
 pygame.init()
 pygame.mixer.init()
+pygame.mixer.set_num_channels(32)  # 增加音軌數到 32，避免聲音被吃掉
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 pygame.display.set_caption('飛機打隕石')
@@ -57,11 +58,11 @@ class Game:
         if len(self.rocks) >= MAX_ROCKS:
             return
         spawn_rates = {
-            BaseRock: 10,
-            SplitRock: 20,
-            ExplodingRock: 10,
-            Sniper: 5,
-            Rusher: 55
+            BaseRock: 35,
+            SplitRock: 25,
+            ExplodingRock: 20,
+            Sniper: 10,
+            Rusher: 10
         }
         enemy_class = random.choices(list(spawn_rates.keys()), weights=list(spawn_rates.values()), k=1)[0]
         if enemy_class == Rusher:

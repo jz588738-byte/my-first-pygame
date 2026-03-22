@@ -95,7 +95,9 @@ def Load_resources():
     pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound','expl0.wav')),
     pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound','expl1.wav'))
     ]
-    
+
+    res['sound']['rusher_boost'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'rusher_boost.wav'))
+    res['sound']['rusher_passby'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'rusher_passby.wav'))
     res['sound']['crash_player'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'crash_player.wav'))
     res['sound']['hit_enemy'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'hit_enemy.wav'))
     res['sound']['laser_shoot'] = pygame.mixer.Sound(os.path.join(BASE_DIR, 'sound', 'laser_shoot.wav'))

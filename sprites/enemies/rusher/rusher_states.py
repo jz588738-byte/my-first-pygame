@@ -46,17 +46,18 @@ class BurstState(RusherBaseState):
     def update(self, dt, events=None):
         now = pygame.time.get_ticks()
         #查看玩家是否有經過rusher的方向
-        if abs(self.owner.rect.centerx - self.game.player.rect.centerx) < 50:
+        if abs(self.owner.rect.centerx - self.game.player.rect.centerx) < 50 and self.owner.has_boosted == False:
             self.owner.has_boosted = True
             self.owner.image = self.game.res['img']['rusher_burst']
+            self.game.res['sound']['rusher_boost'].play()
             
         
-        if now - self.start_time >= 1000:
-            if self.owner.has_boosted:
-                self.owner.pos.y += self.owner.burst_speed_y * dt * 60
-            else:
-                self.owner.pos.y += self.owner.speed_y * dt * 60
-            self.owner.rect.centery = self.owner.pos.y
+        if self.owner.has_boosted:
+            self.owner.pos.y += self.owner.burst_speed_y * dt * 60
+        else:
+            self.owner.pos.y += self.owner.speed_y * dt * 60
+            
+        self.owner.rect.centery = self.owner.pos.y
         
         if self.owner.rect.top >= HEIGHT:
             self.owner.kill()
