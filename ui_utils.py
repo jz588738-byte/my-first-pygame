@@ -1,10 +1,10 @@
 import os
 import pygame
-from resource_manager import BASE_DIR
 from setting import *
 
-# 載入字體
-font_name = os.path.join(BASE_DIR, 'font', 'font.ttf')
+# 載入字體 (為相容網頁版，直接使用相對路徑)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+font_name = os.path.join(BASE_DIR, 'assets', 'font', 'font.ttf')
 
 def Draw_text(surf, text, size, x, y):
     font = pygame.font.Font(font_name, size)
