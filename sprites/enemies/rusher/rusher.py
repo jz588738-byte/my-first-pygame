@@ -16,8 +16,8 @@ class Rusher(BaseEnemy):
         self.rect.bottom = 0
         self.pos = pygame.Vector2(self.rect.center)
         self.damage = 40
-        self.speed_y = 8
-        self.burst_speed_y = 12
+        self.speed_y = 12
+        self.burst_speed_y = 16
         self.has_boosted = False
         
         self.state_machine = StateMachine(self)
