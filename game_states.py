@@ -22,9 +22,9 @@ class MenuState(GameBaseState):
         
     def draw(self, screen):
         screen.blit(self.res['img']['background'], (0, 0))
-        Draw_text(screen, '太空生存戰!!!', 64, WIDTH / 2, HEIGHT / 4)
-        Draw_text(screen, 'AD鍵控制左右移動，空白鍵可以射擊。', 23, WIDTH / 2, HEIGHT / 2)
-        Draw_text(screen, '點任意鍵可以開始遊戲。', 23, WIDTH / 2, (HEIGHT / 3) * 2)
+        Draw_text(screen, 'STAR STRIKER!!!', 64, WIDTH / 2, HEIGHT / 4)
+        Draw_text(screen, 'A/D to move, Space to shoot.', 23, WIDTH / 2, HEIGHT / 2)
+        Draw_text(screen, 'Press any key to start.', 23, WIDTH / 2, (HEIGHT / 3) * 2)
 
 class PlayState(GameBaseState):
     def enter(self):
@@ -111,7 +111,7 @@ class GameOverState(GameBaseState):
         
     def draw(self, screen):
         screen.blit(self.res['img']['background'], (0,0))
-        Draw_text(screen, '遊戲結束!', 64, WIDTH / 2, HEIGHT / 4)
-        Draw_text(screen, f'最終分數: {self.game.score}.', 30, WIDTH / 2, HEIGHT / 2)
-        Draw_text(screen, '按下 [R] 重新開始', 23, WIDTH / 2, (HEIGHT / 3) * 2)
-        Draw_text(screen, '按下 [M] 回到主選單', 23, WIDTH / 2, (HEIGHT / 3) * 2 + 40)
+        Draw_text(screen, 'GAME OVER!!!', 64, WIDTH / 2, HEIGHT / 4)
+        Draw_text(screen, f'Final Score: {self.game.score}.', 30, WIDTH / 2, HEIGHT / 2)
+        Draw_text(screen, 'Press [R] to restart', 23, WIDTH / 2, (HEIGHT / 3) * 2)
+        Draw_text(screen, 'Press [M] to return to the main menu', 23, WIDTH / 2, (HEIGHT / 3) * 2 + 40)

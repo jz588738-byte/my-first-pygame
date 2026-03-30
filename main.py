@@ -1,7 +1,7 @@
-from setting import HEIGHT
-from setting import FPS
+# -*- coding: utf-8 -*-
 import pygame
 import random
+import asyncio
 from setting import *
 from sprites import *
 from resource_manager import Load_resources
@@ -9,29 +9,22 @@ from ui_utils import Draw_text, Draw_health, Draw_lives
 from state_machine import StateMachine
 from game_states import MenuState, PlayState, GameOverState
 
-# ── 初始化 ──
-pygame.init()
-pygame.mixer.init()
-pygame.mixer.set_num_channels(32)  # 增加音軌數到 32，避免聲音被吃掉
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-clock = pygame.time.Clock()
-pygame.display.set_caption('飛機打隕石')
-
-# ── 載入資源 ──
-res = Load_resources()
-
 class Game:
     def __init__(self, res, screen):
         self.res = res
         self.screen = screen
         self.death_expl = None
 
-        # ── 建立 State Machine ──
+        # 建立 State Machine 
         self.state_machine = StateMachine(self)
         self.state_machine.add_state("MenuState", MenuState(self, self))
         self.state_machine.add_state("PlayState", PlayState(self, self))
         self.state_machine.add_state("GameOverState", GameOverState(self, self))
         self.state_machine.change_state("MenuState")
+        print("[DEBUG] State initialized and changed to MenuState.")
+
+        self.reset()
+        print("[DEBUG] Game instance reset complete.")
 
     def reset(self):
         self.death_expl = None
@@ -49,6 +42,7 @@ class Game:
 
         self.player = Player(self)
         self.all_sprites.add(self.player)
+            
         for _ in range(10):
             self.new_enemy()
 
@@ -80,29 +74,47 @@ class Game:
         Draw_health(screen, self.player.health, 5, 15)
         Draw_lives(screen, self.player.lives, self.res['img']['player_mini'], WIDTH - 100, 15)
         Draw_text(screen, str(self.score), 18, WIDTH // 2, 0)
-        Draw_text(screen, 'FPS: ' + str(clock.get_fps()), 18, 100, HEIGHT - 20)
-        Draw_text(screen, 'ms: ' + str(self.frame_ms), 18, 500, HEIGHT - 40)
         
+# 主迴圈 
+async def main():
+    # 初始化 
+    pygame.init()
+    pygame.mixer.init()
+    pygame.mixer.set_num_channels(32)  # 增加音軌數到 32，避免聲音被吃掉
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    clock = pygame.time.Clock()
+    pygame.display.set_caption('Star Striker')
 
-# 建立遊戲實例
-game = Game(res, screen)
+    # 載入資源 
+    res = Load_resources()
+    pygame.display.set_icon(res['img']['player_mini'])
 
-# ── 主迴圈 ──
-running = True
-while running:
-    # 算 dt (秒)
-    frame_ms = clock.tick(FPS)
-    dt = min(frame_ms / 1000.0, 0.1) # 限制最大 dt 避面大斷電跳躍
-    game.frame_ms = frame_ms
+    # 建立遊戲實例
+    game = Game(res, screen)
     
-    events = pygame.event.get()
-    for event in events:
-        if event.type == pygame.QUIT:
-            running = False
+    running = True
+    frames_passed = 0
+    while running:
+        # 算 dt (秒)
+        frame_ms = clock.tick(FPS)
+        dt = min(frame_ms / 1000.0, 0.1) # 限制最大 dt 避面大斷電跳躍
+        game.frame_ms = frame_ms
+        
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                running = False
 
-    # 全部交給狀態機處理
-    game.state_machine.update(dt, events)
-    game.state_machine.draw(screen)
-    pygame.display.update()
+        # 全部交給狀態機處理
+        game.state_machine.update(dt, events)
+        game.state_machine.draw(screen)
+        pygame.display.update()
 
-pygame.quit()
+        frames_passed += 1
+
+        await asyncio.sleep(0)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    asyncio.run(main())
